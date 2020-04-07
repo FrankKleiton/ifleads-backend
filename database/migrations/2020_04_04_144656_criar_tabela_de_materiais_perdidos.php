@@ -17,10 +17,10 @@ class CriarTabelaDeMateriaisPerdidos extends Migration
             $table->boolean('devolvido')->default(false);
             $table->string('matriculaDeQuemEntregou', 20)->nullable(false);
             $table->string('matriculaDeQuemPegou', 20)->nullable(false);
-            $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')
+            $table->unsignedBigInteger('material_id');
+            $table->foreign('material_id')
                 ->references('id')
-                ->on('usuarios')
+                ->on('materiais')
                 ->onUpdate('cascade');
         });
     }
