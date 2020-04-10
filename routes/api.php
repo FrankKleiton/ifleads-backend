@@ -20,5 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::namespace('Api')->group(function () {
     Route::get('/materials', 'MaterialController@index');
+    Route::get('/materials/{id}', 'MaterialController@show');
 });
 

@@ -15,7 +15,6 @@ class MaterialTest extends TestCase
         $materials = factory(\App\Material::class, 3)->create();
         $response = $this->getJson('/api/materials');
 
-
         $response->assertStatus(200)
                 ->assertJsonCount(3);
     }
@@ -23,11 +22,15 @@ class MaterialTest extends TestCase
      /** @test */
     public function shouldReturnsOneMaterial()
     {
-        $material = factory(\App\Material::class)->create();
+        $material = factory(\App\Material::class)->create([
+            'nome' => 'Material de Teste'
+        ]);
         $response = $this->getJson("/api/materials/{$material->id}");
 
         $response->assertStatus(200)
-                ->assertJsonCount($material->count(), $key = 1);
+            ->assertJson([
+                'nome' => 'Material de Teste'
+            ]);
     }
 
     /** @test */

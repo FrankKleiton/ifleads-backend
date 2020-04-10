@@ -21,7 +21,8 @@ class MaterialController extends Controller
 
     public function show($id)
     {
-        //
+        $material = Material::find($id);
+        return response()->json($material);
     }
 
     public function update(Request $request, $id)
