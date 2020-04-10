@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * register user feature
      * 
@@ -15,19 +17,26 @@ class AuthenticationTest extends TestCase
      */
     public function testRegister()
     {
-        $response = $this->postJson('/api/register', [
+        $attributes = [
             'nome' => 'Frank Castle',
             'email' => 'thepunisher@gmail.com',
-            'senha' => bcrypt('1234567'),
+            'senha' => '1234567',
             'role' => 2,
-        ]);
-        
-        $response->dump();
+        ];
+
+        $response = $this->postJson('/api/register', $attributes);
+
         $response->assertStatus(201);
+
+        $this->assertDatabaseHas('usuarios', [
+            'email' => $attributes['email'],
+        ]);
+
+        array_splice($attributes, 2, 1);
+
         $response->assertJsonFragment([
-            'nome' => 'Frank Castle',
-            'email' => 'thepunisher@gmail.com',
-            'token' => ''
+            'success' => true,
+            'user_data' => $attributes
         ]);
     }
 }
