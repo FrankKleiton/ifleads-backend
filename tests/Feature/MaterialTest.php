@@ -41,7 +41,6 @@ class MaterialTest extends TestCase
         $response = $this->postJson('/api/materials', [
             'nome' => 'Material1',
             'descricao' => 'Esse material é utilizado apenas para testes',
-            'emprestado' => false,
             'usuario_id' => $user->id
         ]);
 
