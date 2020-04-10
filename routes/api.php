@@ -23,5 +23,6 @@ Route::namespace('Api')->group(function () {
     Route::get('/materials/{id}', 'MaterialController@show');
     Route::post('/materials', 'MaterialController@store');
     Route::put('/materials/{id}', 'MaterialController@update');
+    Route::delete('/materials/{id}', 'MaterialController@destroy');
 });
 

@@ -51,6 +51,13 @@ class MaterialController extends Controller
 
     public function destroy($id)
     {
-        //
+        $material = Material::find($id);
+        if (!$material) {
+            return response()->json([
+                'error' => "Material doesn't exists"
+            ], 400);
+        }
+
+        $material->delete();
     }
 }
