@@ -65,7 +65,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(400)
             ->assertExactJson([
-                'error' => "User doesn't exists"
+                'error' => 'Invalid datas'
             ]);
     }
 
@@ -97,7 +97,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(400)
             ->assertExactJson([
-                'error' => "Material doesn't exists"
+                 'error' => "Material doesn't exists"
             ]);
     }
 
@@ -126,7 +126,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(400)
             ->assertExactJson([
-                'error' => "User doesn't exists"
+                'error' => "Material doesn't exists"
             ]);
     }
 }

@@ -13,4 +13,5 @@ class Material extends Model
         'descricao',
         'usuario_id'
     ];
+
 }

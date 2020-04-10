@@ -16,9 +16,15 @@ class MaterialController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['nome', 'descricao', 'usuario_id']);
-        $material = Material::create($data);
-        return response()->json($material, 201);
+        try {
+            $data = $request->only(['nome', 'descricao', 'usuario_id']);
+            $material = Material::create($data);
+            return response()->json($material, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Invalid datas'
+            ], 400);
+        }
 
     }
 
