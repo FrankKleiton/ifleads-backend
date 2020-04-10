@@ -10,8 +10,7 @@ class Material extends Model
     public $timestamps = false;
     protected $fillable = [
         'nome',
-        'descricao',
-        'usuario_id'
+        'descricao'
     ];
 
 }

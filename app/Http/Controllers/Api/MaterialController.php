@@ -16,16 +16,9 @@ class MaterialController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $data = $request->only(['nome', 'descricao', 'usuario_id']);
-            $material = Material::create($data);
-            return response()->json($material, 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Invalid datas'
-            ], 400);
-        }
-
+        $data = $request->only(['nome', 'descricao']);
+        $material = Material::create($data);
+        return response()->json($material, 201);
     }
 
     public function show($id)
@@ -36,7 +29,24 @@ class MaterialController extends Controller
 
     public function update(Request $request, $id)
     {
-        //
+        $material = Material::find($id);
+
+        if(!$material) {
+            return response()->json([
+                 'error' => "Material doesn't exists"
+            ], 400);
+        }
+
+        $material->nome = $request->has('nome')
+            ? $request->input('nome')
+            : $material->nome;
+        $material->descricao = $request->has('descricao')
+            ? $request->input('descricao')
+            : $material->descricao;
+        $material->save();
+
+        return response()->json($material);
+
     }
 
     public function destroy($id)

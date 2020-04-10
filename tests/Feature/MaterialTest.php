@@ -41,7 +41,6 @@ class MaterialTest extends TestCase
         $response = $this->postJson('/api/materials', [
             'nome' => 'Material1',
             'descricao' => 'Esse material é utilizado apenas para testes',
-            'usuario_id' => $user->id
         ]);
 
         $response->assertStatus(201)
@@ -49,24 +48,6 @@ class MaterialTest extends TestCase
                     'nome' => 'Material1',
                     'descricao' => 'Esse material é utilizado apenas para testes'
                 ]);
-    }
-
-    /** @test */
-    public function shouldThrowAnErrorIfUserNotExists()
-    {
-        $unexistUserId = 1;
-
-        $response = $this->postJson('/api/materials', [
-            'nome' => 'Material1',
-            'descricao' => 'Esse material é utilizado apenas para testes',
-            'emprestado' => false,
-            'usuario_id' => $unexistUserId
-        ]);
-
-        $response->assertStatus(400)
-            ->assertExactJson([
-                'error' => 'Invalid datas'
-            ]);
     }
 
     /** @test */
@@ -82,7 +63,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'nome' => 'Material de Test Editado'
+                'nome' => 'Material de Teste Editado'
             ]);
     }
 
