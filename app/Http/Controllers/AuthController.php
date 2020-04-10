@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\RegistrationFormRequest;
 use App\Usuario;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -12,7 +15,7 @@ class AuthController extends Controller
         $usuario = new Usuario();
         $usuario->nome = $request->nome;
         $usuario->email = $request->email;
-        $usuario->senha = bcrypt($request->senha);
+        $usuario->password = bcrypt($request->password);
         $usuario->role = $request->role;
         $usuario->save();
 
@@ -24,5 +27,24 @@ class AuthController extends Controller
                 'role' => $usuario->role,
             ],
         ], 201);
+    }
+
+    public function login(Request $request)
+    {
+        $input = $request->only(['email', 'password']);
+        $token = null;
+
+        try {
+            if (!$token = JWTAuth::attempt($input)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid information provided',
+                ], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
+
+        return response()->json(['success' => true, 'token' => $token]);
     }
 }

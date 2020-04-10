@@ -6,21 +6,22 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+/**
+ * @author franklynkleiton
+ */
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * register user feature
-     * 
-     * @return void
+     * @test
      */
-    public function testRegister()
+    public function registerRequestCreateUser()
     {
         $attributes = [
             'nome' => 'Frank Castle',
             'email' => 'thepunisher@gmail.com',
-            'senha' => '1234567',
+            'password' => '1234567',
             'role' => 2,
         ];
 
@@ -38,5 +39,20 @@ class AuthenticationTest extends TestCase
             'success' => true,
             'user_data' => $attributes
         ]);
+    }
+
+    /**
+     * @test
+     */
+    public function registeredUserCanLoggin()
+    {
+        $usuario = factory(\App\Usuario::class)->create();
+
+        $response = $this->postJson('/api/login', [
+            'email' => $usuario->email, 'password' => '123456'
+        ]);
+
+        $this->assertTrue($response['success']);
+        $this->assertNotEmpty($response['token']);
     }
 }
