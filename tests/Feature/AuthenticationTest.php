@@ -13,9 +13,7 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @test
-     */
+    /** @test */
     public function registerRequestCreateUser()
     {
         $attributes = [
@@ -29,21 +27,19 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('usuarios', [
-            'email' => $attributes['email'],
-        ]);
-
         array_splice($attributes, 2, 1);
 
         $response->assertJsonFragment([
             'success' => true,
             'user_data' => $attributes
         ]);
+
+        $this->assertDatabaseHas('usuarios', [
+            'email' => $attributes['email'],
+        ]);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function registeredUserCanLoggin()
     {
         $usuario = factory(\App\Usuario::class)->create();
