@@ -19,8 +19,9 @@ class Usuario extends Authenticatable implements JWTSubject
     /**
      * Defining table name due to the use of
      * the portuguese translation of the word
-     * user for avoid possible errors in laravel
-     * table name transformations.
+     * user on the basis of perception that change
+     * laravel naming standard without defining that
+     * change in table attribute will cause errors.
      * 
      * @var string
      */

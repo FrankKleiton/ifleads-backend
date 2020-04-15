@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\RegistrationFormRequest;
 use App\Usuario;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
     public function register(RegistrationFormRequest $request)
     {
-        $usuario = new Usuario();
-        $usuario->nome = $request->nome;
-        $usuario->email = $request->email;
-        $usuario->password = bcrypt($request->password);
-        $usuario->role = $request->role;
-        $usuario->save();
+        $usuario = Usuario::create([
+            'nome' => $request->nome,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -31,11 +31,11 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $input = $request->only(['email', 'password']);
+        $credentials = $request->only(['email', 'password']);
         $token = null;
 
         try {
-            if (!$token = JWTAuth::attempt($input)) {
+            if (!$token = auth()->attempt($credentials)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid information provided',
@@ -46,5 +46,26 @@ class AuthController extends Controller
         }
 
         return response()->json(['success' => true, 'token' => $token]);
+    }
+
+    public function logout(Request $request)
+    {
+        $this->validate($request, [
+            'token' => 'required',
+        ]);
+
+        try {
+            auth()->logout();
+            return response()->json([
+                'success' => true,
+                'message' => 'User logged out successfully',
+            ]);
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, the user cannot be logged out',
+            ], 500);
+        }
+
     }
 }

@@ -14,10 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['auth.jwt'])->group(function () {
+    Route::get('logout', 'AuthController@logout');
 });
 
-Route::post('register', 'AuthController@register');
+Route::middleware(['auth.jwt', 'auth.isAdmin'])->group(function () {
+    Route::post('register', 'AuthController@register');
+});
 
 Route::post('login', 'AuthController@login');

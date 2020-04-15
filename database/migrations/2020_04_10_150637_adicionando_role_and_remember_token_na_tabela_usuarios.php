@@ -18,8 +18,8 @@ class AdicionandoRoleAndRememberTokenNaTabelaUsuarios extends Migration
             /**
              * Explanation for the use of default value
              * 
-             * Adding default due to SQLite bug that not allow not nullable
-             * column without adding default value. 
+             * It was added default value to role due to SQLite bug that not 
+             * allow not nullable column without it. 
              */
             $table->tinyInteger('role')->nullable(false)->default(2);
             $table->rememberToken();
