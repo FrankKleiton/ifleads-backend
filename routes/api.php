@@ -49,3 +49,9 @@ Route::post('/session', function (Request $request, JsonWebToken $jwt) {
     ], 404);
 });
 */
+
+Route::get('/unauthorized', function (Request $request) {
+    return response()->json([
+        'error' => 'Token should be provide'
+    ], 401);
+})->name('unauthorized');
