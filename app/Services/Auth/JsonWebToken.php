@@ -24,7 +24,7 @@ class JsonWebToken
             throw new \Exception("Paramater 'payload' can't be empty");
 
         if (!empty($exp_time))
-            $this->claims['exp'] => $exp_time;
+            $this->claims['exp'] = $exp_time;
 
         $this->claims['payload'] = $payload;
 
