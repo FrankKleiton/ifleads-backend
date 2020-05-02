@@ -2,4 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', 'Auth\RegisterController@register');
+/**
+ * @see \app\Providers\RouteServiceProvider::mapAdminRoutes
+ */
+
+Route::group(['as' => 'admin.', 'middleware' => 'auth:api'], function () {
+    Route::post('/register', 'Auth\RegisterController@register');
+});
