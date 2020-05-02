@@ -3,13 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\RegisterEmployee;
+use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterEmployee $request)
     {
-        echo "foi";
-        die();
+        $signup_informations = $request->validated();
+
+        $user = User::create([
+            'nome' => $signup_informations['nome'],
+            'email' => $signup_informations['email'],
+            'senha' => Hash::make($signup_informations['senha']),
+            'role' => $signup_informations['role'],
+        ]);
+
+        return response()->json($user);
     }
 }

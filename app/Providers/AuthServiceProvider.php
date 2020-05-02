@@ -6,7 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
-use Jweety\Encoder
+use Jweety\Encoder;
 use App\Services\Auth\JsonWebToken;
 use App\Services\Auth\JwtGuard;
 
@@ -46,12 +46,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Auth::extend('jwt', function ($app, $name, array $config)) {
+        Auth::extend('jwt', function ($app, $name, array $config) {
             return new JwtGuard(
                 Auth::createUserProvider($config['provider']),
                 $app['request'],
                 resolve(JsonWebToken::class)
             );
-        }
+        });
     }
 }
