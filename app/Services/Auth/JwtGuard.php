@@ -3,13 +3,15 @@
 namespace App\Services\Auth;
 
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Auth\GuradHelpers;
+use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
+use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class JwtGuard implements Guard
 {
-    use GuradHelpers;
+    use GuardHelpers;
 
     protected $request;
 
@@ -58,5 +60,29 @@ class JwtGuard implements Guard
         $this->request = $request;
 
         return $this;
+    }
+
+    /**
+     * Check if user credentials is valid
+     * 
+     * Check if user credentials provided is equivalent
+     * with an persisted user. The persisted password must
+     * be stored as a hash for this method work.
+     * 
+     * @param array $credentials
+     * @return string|null
+     */
+    public function attempt(array $credentials): ?string
+    {
+      $user = User::where('email', $credentials['email'])->first();
+
+      if (!Hash::check($credentials['senha'], $user->senha)) {
+          return null;
+      }
+
+      return $this->jwt->generateToken([
+        'email' => $user->email, 
+        'id' => $user->id
+      ]);
     }
 }
