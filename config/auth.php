@@ -2,6 +2,20 @@
 
 return [
 
+
+
+    /*
+        Config JWT
+    */
+
+    'jwt' => [
+        'secret' => env('APP_SECRET', '123'),
+        'initial_claims' => [
+            'host' => env('APP_URL', 'http://localhost'),
+            'exp' => time() + (7 * 24 * 60 * 60)
+        ]
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -42,10 +56,15 @@ return [
         ],
 
         'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
+        /*'api' => [
             'driver' => 'token',
             'provider' => 'users',
             'hash' => false,
-        ],
+        ],*/
     ],
 
     /*

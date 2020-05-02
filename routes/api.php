@@ -22,3 +22,36 @@ Route::namespace('Api')->group(function () {
     Route::apiResource('materials', 'MaterialController');
 });
 
+/*
+---- ROTA DE EXEMPLO DE GERAÇÃO DO TOKEN ----
+
+Route::post('/session', function (Request $request, JsonWebToken $jwt) {
+    $user = User::where([
+        'email' => $request->input('email'),
+        'password' => $request->input('password')
+    ])->first();
+
+    if ($user) {
+
+        $token = $jwt->generateToken([
+            'id' => $user->id,
+            'email' => $user->email
+        ]);
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+    }
+
+    return response()->json([
+        'error' => 'User not found'
+    ], 404);
+});
+*/
+
+Route::get('/unauthorized', function (Request $request) {
+    return response()->json([
+        'error' => 'Token should be provide'
+    ], 401);
+})->name('unauthorized');
