@@ -79,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
-     * Define the "guest" routes for the application
+     * Define the "admin" routes for the application
      * 
      * these routes are typically stateless
      * @return void
