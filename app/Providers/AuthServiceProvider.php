@@ -10,6 +10,8 @@ use Jweety\Encoder;
 use App\Services\Auth\JsonWebToken;
 use App\Services\Auth\JwtGuard;
 
+use App\User;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -18,7 +20,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+         User::class => 'App\Policies\AdminPolicy',
     ];
 
 

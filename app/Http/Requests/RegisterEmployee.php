@@ -13,7 +13,7 @@ class RegisterEmployee extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->role == 1;
+        return true;
     }
 
     /**
