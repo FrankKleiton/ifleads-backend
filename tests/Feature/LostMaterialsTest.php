@@ -6,12 +6,22 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class LostMaterials extends TestCase
+class LostMaterialsTest extends TestCase
 {
     /**
      * @test
      */
-    public function Example()
+    public function shouldCreateANewLostMaterial()
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldDeleteALostMaterial()
     {
         $response = $this->get('/');
 
