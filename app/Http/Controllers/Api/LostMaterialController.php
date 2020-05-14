@@ -8,18 +8,22 @@ use App\Material;
 
 class LostMaterialController extends Controller
 {
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
             'nome' => 'string|required',
             'descricao' => 'string|required',
             'matriculaDeQuemEntregou' => 'string|required|max:20'
         ]);
 
-        $materialData = $request->only(['nome', 'descricao']);
-        $lostMaterialData = $request->only(['matriculaDeQuemEntregou']);
+        $material = Material::create([
+            'nome' => $validatedData['nome'],
+            'descricao' => $validatedData['descricao']
+        ]);
 
-        $material = Material::create($materialData);
-        $lostMaterial = $material->lostMaterial()->create($lostMaterialData);
+        $lostMaterial = $material->lostMaterial()->create([
+            'matriculaDeQuemEntregou' => $validatedData['matriculaDeQuemEntregou']
+        ]);
 
         return response()->json([
             'id' => $material->id,
