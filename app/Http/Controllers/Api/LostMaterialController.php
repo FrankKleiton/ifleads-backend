@@ -10,19 +10,19 @@ class LostMaterialController extends Controller
 {
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validatedData = (object) $request->validate([
             'nome' => 'string|required',
             'descricao' => 'string|required',
             'matriculaDeQuemEntregou' => 'string|required|max:20'
         ]);
 
         $material = Material::create([
-            'nome' => $validatedData['nome'],
-            'descricao' => $validatedData['descricao']
+            'nome' => $validatedData->nome,
+            'descricao' => $validatedData->descricao
         ]);
 
         $lostMaterial = $material->lostMaterial()->create([
-            'matriculaDeQuemEntregou' => $validatedData['matriculaDeQuemEntregou']
+            'matriculaDeQuemEntregou' => $validatedData->matriculaDeQuemEntregou
         ]);
 
         return response()->json([
