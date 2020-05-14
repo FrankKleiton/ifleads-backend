@@ -9,6 +9,12 @@ use App\Material;
 class LostMaterialController extends Controller
 {
     public function store(Request $request) {
+        $validatedData = $request->validate([
+            'nome' => 'string|required',
+            'descricao' => 'string|required',
+            'matriculaDeQuemEntregou' => 'string|required|max:20'
+        ]);
+
         $materialData = $request->only(['nome', 'descricao']);
         $lostMaterialData = $request->only(['matriculaDeQuemEntregou']);
 
