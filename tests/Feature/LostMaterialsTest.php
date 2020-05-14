@@ -3,28 +3,29 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class LostMaterialsTest extends TestCase
 {
-    /**
-     * @test
-     */
+    use RefreshDatabase;
+
+    /** @test */
     public function shouldCreateANewLostMaterial()
     {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
+        $body = [
+            'nome' => 'Lost Material Test',
+            'descricao' => 'Lost material only for test',
+            'matriculaDeQuemEntregou' => '20161038060041'
+        ];
 
-    /**
-     * @test
-     */
-    public function shouldDeleteALostMaterial()
-    {
-        $response = $this->get('/');
+        $response = $this->postJson('/api/materials/losts', $body);
 
-        $response->assertStatus(200);
+        $response->assertStatus(201)
+            ->assertJson([
+                'nome' => $body['nome'],
+                'descricao' => $body['descricao'],
+                'matriculaDeQuemEntregou' => $body['matriculaDeQuemEntregou']
+            ]);
     }
 }
