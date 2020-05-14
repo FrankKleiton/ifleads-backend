@@ -36,4 +36,12 @@ class User extends Authenticatable
     {
         return intval($this->role) === 1;
     }
+
+    /**
+     * Get the loans made by the user.
+     */
+    public function loans()
+    {
+        return $this->hasMany('App\Loan', 'user_id');
+    }
 }

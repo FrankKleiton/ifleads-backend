@@ -20,6 +20,10 @@ Route::namespace('Api')->group(function () {
     Route::apiResource('materials', 'MaterialController');
 });
 
+Route::group(['namespace' => 'Api', 'middleware' => 'auth:api'], function () {
+    Route::apiResource('loans', 'LoanController');
+});
+
 Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');
 
 Route::get('/forbidden', 'ErrorController@forbidden')->name('forbidden');

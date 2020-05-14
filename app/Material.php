@@ -16,4 +16,13 @@ class Material extends Model
         'descricao'
     ];
 
+    public function loans()
+    {
+        return $this->hasMany('App\Loan');
+    }
+
+    public function isLost($state = null)
+    {
+        return !is_null($state);
+    }
 }
