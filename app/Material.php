@@ -16,4 +16,10 @@ class Material extends Model
         'descricao'
     ];
 
+
+    public function lostMaterial()
+    {
+        return $this->hasOne('App\LostMaterial', 'material_id');
+    }
+
 }

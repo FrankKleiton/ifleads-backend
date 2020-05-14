@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', 'Auth\LoginController@login');
 
 Route::namespace('Api')->group(function () {
-    Route::apiResource('materials', 'MaterialController');
+    Route::apiResource('/materials', 'MaterialController');
+
+    Route::post('/materials/losts', 'LostMaterialController@store')->name('lost.material');
 });
 
 Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');
