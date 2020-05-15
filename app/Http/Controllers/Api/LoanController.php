@@ -18,7 +18,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        return response()->json(['greeting' => 'Hello World']);
+        //
     }
 
     /**
@@ -58,6 +58,8 @@ class LoanController extends Controller
             $loan = new Loan;
 
             $loan->tooker_id = $inputs['tooker_id'];
+            $loan->loan_time = now();
+            $loan->loaned = true;
             $loan->material()->associate($material);
             $loan->user()->associate(Auth::user());
             $loan->save();

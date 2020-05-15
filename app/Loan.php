@@ -6,7 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Loan extends Model
 {
+    /**
+     * Define the mass assignable attributes
+     *
+     * @var array
+     */
     protected $fillable = ['tooker_id'];
+
+    /*
+     * Define if the model's table will have
+     * created_at and updated_at columns.
+     *
+     */
+    public $timestamps = false;
 
     /*
      * Get the loan's user.
