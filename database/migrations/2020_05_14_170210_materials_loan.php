@@ -16,11 +16,13 @@ class MaterialsLoan extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->string('tooker_id')->notNullable();
+            $table->boolean('loaned')->default(false);
+            $table->dateTime('loan_time')->nullable();
+            $table->dateTime('return_time')->nullable();
             $table->foreignId('user_id');
             $table->foreign('user_id')->references('id')->on('usuarios');
             $table->foreignId('material_id');
             $table->foreign('material_id')->references('id')->on('materiais');
-            $table->timestamps();
         });
     }
 
