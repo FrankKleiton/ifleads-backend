@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', 'Auth\LoginController@login');
 
-Route::namespace('Api')->group(function () {
+Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
     Route::apiResource('/materials', 'MaterialController');
 
     Route::post('/materials/losts', 'LostMaterialController@store')->name('lost.material');
