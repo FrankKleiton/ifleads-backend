@@ -59,4 +59,9 @@ class Material extends Model
     {
         return $this->hasOne('App\LostMaterial', 'material_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo('\App\User', 'usuario_id');
+    }
 }

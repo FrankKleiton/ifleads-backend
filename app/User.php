@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Loan', 'user_id');
     }
+
+    public function materials()
+    {
+        return $this->hasMany('\App\Material', 'usuario_id');
+    }
 }
