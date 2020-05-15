@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Services\Auth\JsonWebToken;
 
 class MaterialTest extends TestCase
 {
@@ -12,8 +13,13 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldReturnsAnArrayMaterials()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $materials = factory(\App\Material::class, 3)->create();
-        $response = $this->getJson('/api/materials');
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/materials');
 
         $response->assertStatus(200)
                 ->assertJsonCount(3);
@@ -22,10 +28,15 @@ class MaterialTest extends TestCase
      /** @test */
     public function shouldReturnsOneMaterial()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $material = factory(\App\Material::class)->create([
             'nome' => 'Material de Teste'
         ]);
-        $response = $this->getJson("/api/materials/{$material->id}");
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson("/api/materials/{$material->id}");
 
         $response->assertStatus(200)
             ->assertJson([
@@ -37,11 +48,14 @@ class MaterialTest extends TestCase
     public function shouldCreatesANewMaterial()
     {
         $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $response = $this->postJson('/api/materials', [
-            'nome' => 'Material1',
-            'descricao' => 'Esse material é utilizado apenas para testes',
-        ]);
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials', [
+                'nome' => 'Material1',
+                'descricao' => 'Esse material é utilizado apenas para testes',
+            ]);
 
         $response->assertStatus(201)
                 ->assertJson([
@@ -53,13 +67,18 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldUpdatesAMaterial()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $material = factory(\App\Material::class)->create([
             'nome' => 'Material de Teste'
         ]);
 
-        $response = $this->putJson("/api/materials/{$material->id}", [
-            'nome' => 'Material de Teste Editado'
-        ]);
+        $response = $this->withHeaders($authorizationHeader)
+            ->putJson("/api/materials/{$material->id}", [
+                'nome' => 'Material de Teste Editado'
+            ]);
 
         $response->assertStatus(200)
             ->assertJson([
@@ -70,11 +89,16 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldThrowAnErrorIfHadNoMaterialToBeUpdated()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $unexistMaterialId = 10;
 
-        $response = $this->putJson("/api/materials/{$unexistMaterialId}", [
-            'nome' => 'Material de Teste Editado'
-        ]);
+        $response = $this->withHeaders($authorizationHeader)
+            ->putJson("/api/materials/{$unexistMaterialId}", [
+                'nome' => 'Material de Teste Editado'
+            ]);
 
         $response->assertStatus(400)
             ->assertExactJson([
@@ -85,11 +109,16 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldDeletesAMaterial()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $material = factory(\App\Material::class)->create([
             'nome' => 'Material de Teste'
         ]);
 
-        $response = $this->deleteJson("/api/materials/{$material->id}");
+        $response = $this->withHeaders($authorizationHeader)
+            ->deleteJson("/api/materials/{$material->id}");
 
         $response->assertStatus(200);
 
@@ -101,9 +130,14 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldThrowAnErrorIfHadNoMaterialToBeDeleted()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $unexistMaterialId = 10;
 
-        $response = $this->deleteJson("/api/materials/{$unexistMaterialId}");
+        $response = $this->withHeaders($authorizationHeader)
+            ->deleteJson("/api/materials/{$unexistMaterialId}");
 
         $response->assertStatus(400)
             ->assertExactJson([

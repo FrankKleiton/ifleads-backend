@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Services\Auth\JsonWebToken;
 
 class LostMaterialsTest extends TestCase
 {
@@ -12,13 +13,18 @@ class LostMaterialsTest extends TestCase
     /** @test */
     public function shouldCreateANewLostMaterial()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $body = [
             'nome' => 'Lost Material Test',
             'descricao' => 'Lost material only for test',
             'matriculaDeQuemEntregou' => '20161038060041'
         ];
 
-        $response = $this->postJson('/api/materials/losts', $body);
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials/losts', $body);
 
         $response->assertStatus(201)
             ->assertJson([
@@ -31,12 +37,17 @@ class LostMaterialsTest extends TestCase
     /** @test */
     public function shouldCheckTypesOfInputsWhenForCreateANewLostMaterial()
     {
+        $user = factory(\App\User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
         $bodyWithNameTypeIncorrect = [
             'nome' => 123,
             'descricao' => 'Lost material only for test',
             'matriculaDeQuemEntregou' => '20161038060041'
         ];
-        $response = $this->postJson('/api/materials/losts', $bodyWithNameTypeIncorrect);
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials/losts', $bodyWithNameTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithDescriptionTypeIncorrect = [
@@ -44,7 +55,8 @@ class LostMaterialsTest extends TestCase
             'descricao' => 123,
             'matriculaDeQuemEntregou' => '20161038060041'
         ];
-        $response = $this->postJson('/api/materials/losts', $bodyWithDescriptionTypeIncorrect);
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials/losts', $bodyWithDescriptionTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithMatriculaTypeIncorrect = [
@@ -52,7 +64,8 @@ class LostMaterialsTest extends TestCase
             'descricao' => 'Lost material only for test',
             'matriculaDeQuemEntregou' => 20161038060041
         ];
-        $response = $this->postJson('/api/materials/losts', $bodyWithMatriculaTypeIncorrect);
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials/losts', $bodyWithMatriculaTypeIncorrect);
         $response->assertStatus(422);
     }
 }
