@@ -7,9 +7,35 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-    protected $guarded = [];
+
+    /**
+     * Define a custom name for the database
+     * table.
+     *
+     * @var string
+     */
     protected $table = 'usuarios';
+
+    /**
+     * Define the mass assignable attributes
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
+     * Hidde fields on the serialization.
+     *
+     * @var array
+     */
     protected $hidden = ['senha'];
+
+    /**
+     * Define if the model's table will have
+     * created_at and updated_at columns.
+     *
+     * @var boolean
+     */
     public $timestamps = false;
 
     /**

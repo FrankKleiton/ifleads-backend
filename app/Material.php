@@ -18,14 +18,6 @@ class Material extends Model
     protected $table = 'materiais';
 
     /**
-     * Define if the model's table will have
-     * created_at and updated_at columns.
-     *
-     * @var boolean
-     */
-    public $timestamps = false;
-
-    /**
      * Define the mass assignable attributes
      *
      * @var array
@@ -38,6 +30,14 @@ class Material extends Model
      * @var array
      */
     protected $hidden = ['deleted_at'];
+
+    /**
+     * Define if the model's table will have
+     * created_at and updated_at columns.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 
     /**
      * Get the user's loans.
