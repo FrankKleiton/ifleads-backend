@@ -49,7 +49,6 @@ class LoanController extends Controller
         $material = Material::find($inputs->material_id);
 
         $loan = new Loan;
-
         $loan->fill([
             'tooker_id' => $inputs->tooker_id,
             'loan_time' => now(),
@@ -59,6 +58,8 @@ class LoanController extends Controller
         $loan->material()->associate($material);
         $loan->user()->associate(Auth::user());
         $loan->save();
+
+        $loan = $loan->makeHidden(['material', 'user']);
 
         return response()->json($loan, 201);
     }
