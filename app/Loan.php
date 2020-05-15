@@ -13,14 +13,15 @@ class Loan extends Model
      */
     protected $fillable = ['tooker_id'];
 
-    /*
+    /**
      * Define if the model's table will have
      * created_at and updated_at columns.
      *
+     * @var boolean
      */
     public $timestamps = false;
 
-    /*
+    /**
      * Get the loan's user.
      */
     public function user()
@@ -28,7 +29,7 @@ class Loan extends Model
         return $this->belongsTo('App\User', 'user_id');
     }
 
-    /*
+    /**
      * Get the loaned material.
      */
     public function material()
