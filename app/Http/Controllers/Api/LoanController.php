@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\LoanStore;
 use App\Material;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Loan;
@@ -37,16 +37,13 @@ class LoanController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LoanStore $request)
     {
-        $inputs = $request->validate([
-            'tooker_id' => 'required|integer',
-            'material_id' => 'required|integer',
-        ]);
+        $inputs = (object) $request->validated();
 
         try {
 
-            $material = Material::findOrFail($inputs['material_id']);
+            $material = Material::findOrFail($inputs->material_id);
 
             if ($material->isLost()) {
                 return response()->json([
@@ -57,7 +54,7 @@ class LoanController extends Controller
 
             $loan = new Loan;
 
-            $loan->tooker_id = $inputs['tooker_id'];
+            $loan->tooker_id = $inputs->tooker_id;
             $loan->loan_time = now();
             $loan->loaned = true;
             $loan->material()->associate($material);
