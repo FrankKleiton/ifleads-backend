@@ -13,7 +13,7 @@ class Material extends Model
     public $timestamps = false;
     protected $fillable = [
         'nome',
-        'descricao'
+        'descricao',
     ];
 
     public function loans()
