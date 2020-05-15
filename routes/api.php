@@ -19,10 +19,9 @@ Route::post('/login', 'Auth\LoginController@login');
 Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
     Route::apiResource('/materials', 'MaterialController');
 
-    Route::post('/materials/losts', 'LostMaterialController@store')->name('lost.material');
-});
+    Route::post('/materials/losts', 'LostMaterialController@store')
+        ->name('lost.material');
 
-Route::group(['namespace' => 'Api', 'middleware' => 'auth:api'], function () {
     Route::apiResource('loans', 'LoanController');
 });
 

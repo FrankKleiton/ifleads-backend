@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Auth;
 
 class LoanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('checkLostMaterial')->only('store');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,33 +46,21 @@ class LoanController extends Controller
     {
         $inputs = (object) $request->validated();
 
-        try {
+        $material = Material::find($inputs->material_id);
 
-            $material = Material::findOrFail($inputs->material_id);
+        $loan = new Loan;
 
-            if ($material->isLost()) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => 'Ask for a existing material'
-                ], 404);
-            }
+        $loan->fill([
+            'tooker_id' => $inputs->tooker_id,
+            'loan_time' => now(),
+            'loaned' => true,
+        ]);
 
-            $loan = new Loan;
+        $loan->material()->associate($material);
+        $loan->user()->associate(Auth::user());
+        $loan->save();
 
-            $loan->tooker_id = $inputs->tooker_id;
-            $loan->loan_time = now();
-            $loan->loaned = true;
-            $loan->material()->associate($material);
-            $loan->user()->associate(Auth::user());
-            $loan->save();
-
-            return response()->json($loan);
-        } catch (ModelNotFoundException $err) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Insert a valid material_id'
-            ], 422);
-        }
+        return response()->json($loan, 201);
     }
 
     /**
