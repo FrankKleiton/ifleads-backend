@@ -51,4 +51,12 @@ class Material extends Model
     {
         return !is_null($state);
     }
+
+    /**
+     * Get the material's lost material.
+     */
+    public function lostMaterial()
+    {
+        return $this->hasOne('App\LostMaterial', 'material_id');
+    }
 }
