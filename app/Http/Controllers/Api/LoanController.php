@@ -8,6 +8,7 @@ use App\Material;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Loan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
@@ -23,17 +24,9 @@ class LoanController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $loans = Loan::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        //
+        return response()->json($loans);
     }
 
     /**
@@ -44,13 +37,13 @@ class LoanController extends Controller
      */
     public function store(LoanStore $request)
     {
-        $inputs = (object) $request->validated();
+        $info = (object) $request->validated();
 
-        $material = Material::find($inputs->material_id);
+        $material = Material::find($info->material_id);
 
         $loan = new Loan;
         $loan->fill([
-            'tooker_id' => $inputs->tooker_id,
+            'tooker_id' => $info->tooker_id,
             'loan_time' => now(),
             'loaned' => true,
         ]);
@@ -72,18 +65,16 @@ class LoanController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $loan = Loan::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if (!$loan) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Provide a valid loan, please.'
+            ], 400);
+        }
+
+        return response()->json($loan);
     }
 
     /**
@@ -95,7 +86,28 @@ class LoanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $fresh_info = $request->validate([
+            'tooker_id' => 'integer',
+            'loaned' => 'boolean'
+        ]);
+
+        $loan = Loan::find($id);
+        $loan->fill($fresh_info);
+
+        if ($loan->isDirty('loaned')) {
+            $loan->return_time = now();
+        }
+
+        $loan->save();
+
+        if (!$loan->wasChanged()) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Provide valid fields, please.'
+            ], 400);
+        }
+
+        return response()->json($loan->refresh(), 200);
     }
 
     /**
