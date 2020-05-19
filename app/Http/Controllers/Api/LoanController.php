@@ -107,7 +107,7 @@ class LoanController extends Controller
             ], 400);
         }
 
-        return response()->json($loan->refresh(), 200);
+        return response()->json($loan, 200);
     }
 
     /**
