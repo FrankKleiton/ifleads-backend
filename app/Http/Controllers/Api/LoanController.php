@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoanStore;
+use App\Http\Requests\StoreLoan;
+use App\Http\Requests\UpdateLoan;
 use App\Material;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Loan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
@@ -32,10 +32,10 @@ class LoanController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreLoan  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(LoanStore $request)
+    public function store(StoreLoan $request)
     {
         $info = (object) $request->validated();
 
@@ -80,16 +80,13 @@ class LoanController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UpdateLoan  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateLoan $request, $id)
     {
-        $fresh_info = $request->validate([
-            'tooker_id' => 'integer',
-            'loaned' => 'boolean'
-        ]);
+        $fresh_info = $request->validated();
 
         $loan = Loan::find($id);
         $loan->fill($fresh_info);
