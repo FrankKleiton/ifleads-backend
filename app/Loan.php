@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DateTimeInterface;
 
 class Loan extends Model
 {
@@ -38,5 +39,13 @@ class Loan extends Model
     public function material()
     {
         return $this->belongsTo('App\Material');
+    }
+
+    /**
+     * Format the datetime in model serialization.
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

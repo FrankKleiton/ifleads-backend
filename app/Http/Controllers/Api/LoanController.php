@@ -52,7 +52,7 @@ class LoanController extends Controller
         $loan->user()->associate(Auth::user());
         $loan->save();
 
-        $loan = $loan->makeHidden(['material', 'user']);
+        $loan->makeHidden(['material', 'user']);
 
         return response()->json($loan, 201);
     }
@@ -124,6 +124,7 @@ class LoanController extends Controller
             ], 400);
         }
 
+        // REMIND MYSELF OF CHECK IF THIS VALIDATION CAN BE MAKE IN LOAN HOOK
         if ($loan->loaned) {
             return response()->json([
                 'status' => 'fail',
