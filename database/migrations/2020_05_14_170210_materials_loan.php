@@ -19,6 +19,7 @@ class MaterialsLoan extends Migration
             $table->boolean('loaned')->default(false);
             $table->dateTime('loan_time')->nullable();
             $table->dateTime('return_time')->nullable();
+            $table->softDeletes('deleted_at');
             $table->foreignId('user_id');
             $table->foreign('user_id')->references('id')->on('usuarios');
             $table->foreignId('material_id');

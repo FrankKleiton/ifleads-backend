@@ -18,7 +18,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the loans.
      *
      * @return \Illuminate\Http\Response
      */
@@ -30,7 +30,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created loan in database.
      *
      * @param  \App\Http\Requests\StoreLoan  $request
      * @return \Illuminate\Http\Response
@@ -58,7 +58,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified loan.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -78,7 +78,7 @@ class LoanController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified loan in database.
      *
      * @param  \App\Http\Requests\UpdateLoan  $request
      * @param  int  $id
@@ -108,13 +108,22 @@ class LoanController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified loan from database.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        $loan = Loan::find($id);
+
+        if (!$loan) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => "Provide a valid loan, please."
+            ], 400);
+        }
+
+        $loan->delete();
     }
 }
