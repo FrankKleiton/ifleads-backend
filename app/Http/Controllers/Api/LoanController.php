@@ -124,6 +124,13 @@ class LoanController extends Controller
             ], 400);
         }
 
+        if ($loan->loaned) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => "It's not possible exclude loaned materials's loan. Get the material back, please."
+            ], 400);
+        }
+
         $loan->delete();
     }
 }
