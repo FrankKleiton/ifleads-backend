@@ -14,6 +14,7 @@ class CriarTabelaDeMateriaisPerdidos extends Migration
     public function up()
     {
         Schema::create('materiais_perdidos', function (Blueprint $table) {
+            $table->id();
             $table->boolean('devolvido')->default(false);
             $table->string('matriculaDeQuemEntregou', 20)->nullable(false);
             $table->string('matriculaDeQuemPegou', 20)->nullable(false);

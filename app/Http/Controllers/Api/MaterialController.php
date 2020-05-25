@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Material;
+use Illuminate\Support\Facades\Auth;
 
 class MaterialController extends Controller
 {
@@ -17,7 +18,12 @@ class MaterialController extends Controller
     public function store(Request $request)
     {
         $data = $request->only(['nome', 'descricao']);
-        $material = Material::create($data);
+
+        $material = new Material;
+        $material->fill($data);
+        $material->user()->associate(Auth::user());
+        $material->save();
+        $material->makeHidden(['user']);
         return response()->json($material, 201);
     }
 

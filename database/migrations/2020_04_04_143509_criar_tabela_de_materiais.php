@@ -16,8 +16,8 @@ class CriarTabelaDeMateriais extends Migration
         Schema::create('materiais', function (Blueprint $table) {
             $table->id();
             $table->string('nome', 60)->nullable(false);
-            $table->mediumText('descricao');
             $table->boolean('emprestado')->default(false);
+            $table->mediumText('descricao');
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id')
                 ->references('id')
