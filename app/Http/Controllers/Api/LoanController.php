@@ -44,8 +44,7 @@ class LoanController extends Controller
         $loan = new Loan;
         $loan->fill([
             'tooker_id' => $info->tooker_id,
-            'loan_time' => now(),
-            'loaned' => true,
+            'loan_time' => now()
         ]);
 
         $loan->material()->associate($material);
@@ -85,25 +84,21 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateLoan $request, $id)
+    public function update($id)
     {
-        $fresh_info = $request->validated();
-
         $loan = Loan::find($id);
-        $loan->fill($fresh_info);
 
-        if ($loan->isDirty('loaned')) {
-            $loan->return_time = now();
-        }
-
-        $loan->save();
-
-        if (!$loan->wasChanged()) {
+        if (!$loan || $loan->return_time) {
             return response()->json([
                 'status' => 'fail',
-                'message' => 'Provide valid fields, please.'
+                'message' => !$loan
+                    ? "The provided loan does't exists"
+                    : 'Material already returned'
             ], 400);
         }
+
+        $loan->return_time = now();
+        $loan->save();
 
         return response()->json($loan, 200);
     }
@@ -122,13 +117,6 @@ class LoanController extends Controller
             return response()->json([
                 'status' => 'fail',
                 'message' => "Provide a valid loan, please."
-            ], 400);
-        }
-
-        if ($loan->loaned) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => "It's not possible exclude loaned materials's loan. Get the material back, please."
             ], 400);
         }
 

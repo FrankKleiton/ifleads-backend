@@ -16,7 +16,6 @@ class MaterialsLoan extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->string('tooker_id')->notNullable();
-            $table->boolean('loaned')->default(false);
             $table->dateTime('loan_time')->nullable();
             $table->dateTime('return_time')->nullable();
             $table->softDeletes('deleted_at');
