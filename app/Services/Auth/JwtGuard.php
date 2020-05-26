@@ -64,11 +64,11 @@ class JwtGuard implements Guard
 
     /**
      * Check if user credentials is valid
-     * 
+     *
      * Check if user credentials provided is equivalent
      * with an persisted user. The persisted password must
      * be stored as a hash for this method work.
-     * 
+     *
      * @param array $credentials
      * @return string|null
      */
@@ -76,12 +76,12 @@ class JwtGuard implements Guard
     {
       $user = User::where('email', $credentials['email'])->first();
 
-      if (!Hash::check($credentials['senha'], $user->senha)) {
+      if (!Hash::check($credentials['password'], $user->password)) {
           return null;
       }
 
       return $this->jwt->generateToken([
-        'email' => $user->email, 
+        'email' => $user->email,
         'id' => $user->id
       ]);
     }

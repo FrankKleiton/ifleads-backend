@@ -25,7 +25,7 @@ class LoginEmployee extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'senha' => 'required|string|between:6,80'
+            'password' => 'required|string|between:6,80'
         ];
     }
 }

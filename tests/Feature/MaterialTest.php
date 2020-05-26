@@ -83,7 +83,6 @@ class MaterialTest extends TestCase
                 'name' => 'Material of Test Updated'
             ]);
 
-        $response->dump();
         $response->assertStatus(200)
             ->assertJson([
                 'name' => 'Material of Test Updated'
