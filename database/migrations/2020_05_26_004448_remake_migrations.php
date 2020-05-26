@@ -28,6 +28,7 @@ class RemakeMigrations extends Migration
             $table->string('name', 60)->nullable(false);
             $table->mediumText('description')->nullable();
             $table->integer('amount')->default(1);
+            $table->softDeletes('deleted_at', 0);
 
             // part of lost_materials
             $table->string('returner_registration_mark', 60)->nullable();

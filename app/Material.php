@@ -10,19 +10,15 @@ class Material extends Model
     use SoftDeletes;
 
     /**
-     * Define a custom name for the database
-     * table.
-     *
-     * @var string
-     */
-    protected $table = 'materiais';
-
-    /**
      * Define the mass assignable attributes
      *
      * @var array
      */
-    protected $fillable = ['nome', 'descricao'];
+    protected $fillable = [
+        'name',
+        'description',
+        'returner_registration_mark'
+    ];
 
     /**
      * Hidde fields on the serialization.
@@ -47,21 +43,8 @@ class Material extends Model
         return $this->hasMany('App\Loan');
     }
 
-    public function isLost($state = null)
+    public function isLost()
     {
-        return !is_null($state);
-    }
-
-    /**
-     * Get the material's lost material.
-     */
-    public function lostMaterial()
-    {
-        return $this->hasOne('App\LostMaterial', 'material_id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('\App\User', 'usuario_id');
+        return !is_null($this->returner_registration_mark);
     }
 }

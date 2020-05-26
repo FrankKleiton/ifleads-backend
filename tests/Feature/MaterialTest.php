@@ -33,14 +33,15 @@ class MaterialTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(\App\Material::class)->create([
-            'nome' => 'Material de Teste'
+            'name' => 'Material of Test'
         ]);
+
         $response = $this->withHeaders($authorizationHeader)
             ->getJson("/api/materials/{$material->id}");
 
         $response->assertStatus(200)
             ->assertJson([
-                'nome' => 'Material de Teste'
+                'name' => $material->name
             ]);
     }
 
@@ -51,17 +52,19 @@ class MaterialTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
+        $body = [
+            'name' => 'Material',
+            'description' => 'It is only to environment of test',
+        ];
+
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials', [
-                'nome' => 'Material1',
-                'descricao' => 'Esse material é utilizado apenas para testes',
-            ]);
+            ->postJson('/api/materials', $body);
 
         $response->assertStatus(201)
-                ->assertJson([
-                    'nome' => 'Material1',
-                    'descricao' => 'Esse material é utilizado apenas para testes'
-                ]);
+            ->assertJson([
+                'name' => $body['name'],
+                'description' => $body['description']
+            ]);
     }
 
     /** @test */
@@ -72,17 +75,18 @@ class MaterialTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(\App\Material::class)->create([
-            'nome' => 'Material de Teste'
+            'name' => 'Material of Test'
         ]);
 
         $response = $this->withHeaders($authorizationHeader)
             ->putJson("/api/materials/{$material->id}", [
-                'nome' => 'Material de Teste Editado'
+                'name' => 'Material of Test Updated'
             ]);
 
+        $response->dump();
         $response->assertStatus(200)
             ->assertJson([
-                'nome' => 'Material de Teste Editado'
+                'name' => 'Material of Test Updated'
             ]);
     }
 
@@ -97,7 +101,7 @@ class MaterialTest extends TestCase
 
         $response = $this->withHeaders($authorizationHeader)
             ->putJson("/api/materials/{$unexistMaterialId}", [
-                'nome' => 'Material de Teste Editado'
+                'name' => 'Material of Test Updated'
             ]);
 
         $response->assertStatus(400)
@@ -114,7 +118,7 @@ class MaterialTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(\App\Material::class)->create([
-            'nome' => 'Material de Teste'
+            'name' => 'Material of Test'
         ]);
 
         $response = $this->withHeaders($authorizationHeader)
@@ -122,8 +126,8 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertSoftDeleted('materiais', [
-            'nome' => $material->nome
+        $this->assertSoftDeleted('materials', [
+            'name' => $material->name
         ]);
     }
 

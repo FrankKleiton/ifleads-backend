@@ -17,13 +17,12 @@ class MaterialController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['nome', 'descricao']);
+        $validatedData = $request->validate([
+            'name' => 'string|required',
+            'description' => 'string|required'
+        ]);
 
-        $material = new Material;
-        $material->fill($data);
-        $material->user()->associate(Auth::user());
-        $material->save();
-        $material->makeHidden(['user']);
+        $material = Material::create($validatedData);
         return response()->json($material, 201);
     }
 
@@ -43,13 +42,13 @@ class MaterialController extends Controller
             ], 400);
         }
 
-        $material->nome = $request->has('nome')
-            ? $request->input('nome')
-            : $material->nome;
-        $material->descricao = $request->has('descricao')
-            ? $request->input('descricao')
-            : $material->descricao;
-        $material->save();
+        $validatedData = $request->validate([
+            'name' => 'string',
+            'description' => 'string',
+            'amount' => 'numeric'
+        ]);
+
+        $material->update($validatedData);
 
         return response()->json($material);
 
