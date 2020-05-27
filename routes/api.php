@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', 'Auth\LoginController@login');
+Route::post('/login', 'Api\Auth\LoginController@login');
 
 
 Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {

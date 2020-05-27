@@ -18,12 +18,11 @@ class LoginTest extends TestCase
         $user = factory(User::class)->create([
             'password' => 'testpassword'
         ]);
+
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'testpassword'
         ]);
-
-        $response->dump();
         $response->assertStatus(200);
     }
 }
