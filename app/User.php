@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-
     /**
      * Define the mass assignable attributes
      *
@@ -52,7 +51,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return !$this->intern;
+        return $this->role === 'admin';
     }
 
     /**

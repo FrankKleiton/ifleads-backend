@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Services\Auth\JsonWebToken;
+use App\User;
 
 class MaterialTest extends TestCase
 {
@@ -13,7 +14,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldReturnsAnArrayMaterials()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -28,7 +29,7 @@ class MaterialTest extends TestCase
      /** @test */
     public function shouldReturnsOneMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -48,7 +49,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldCreatesANewMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -70,7 +71,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldUpdatesAMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -92,7 +93,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldThrowAnErrorIfHadNoMaterialToBeUpdated()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -112,7 +113,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldDeletesAMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -133,7 +134,7 @@ class MaterialTest extends TestCase
     /** @test */
     public function shouldThrowAnErrorIfHadNoMaterialToBeDeleted()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 

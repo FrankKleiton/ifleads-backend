@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Services\Auth\JsonWebToken;
+use App\User;
 
 class LostMaterialsTest extends TestCase
 {
@@ -13,7 +14,7 @@ class LostMaterialsTest extends TestCase
     /** @test */
     public function shouldCreateANewLostMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
@@ -37,7 +38,7 @@ class LostMaterialsTest extends TestCase
     /** @test */
     public function shouldCheckTypesOfInputsWhenForCreateANewLostMaterial()
     {
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
