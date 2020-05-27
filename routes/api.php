@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', 'Auth\LoginController@login');
+
+Route::group(['as' => 'admin.', 'middleware' => ['auth:api', 'onlyAdmin']], function () {
+    Route::post('/register', 'Admin\UserController@create')->name('create');
+});
 
 Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
     Route::apiResource('/materials', 'MaterialController');

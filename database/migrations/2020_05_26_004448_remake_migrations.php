@@ -20,7 +20,8 @@ class RemakeMigrations extends Migration
             $table->string('name', 60)->nullable(false);
             $table->string('email', 60)->nullable(false)->unique();
             $table->string('password', 80)->nullable(false);
-            $table->boolean('intern')->default(false);
+            $table->enum('role', ['admin', 'employee', 'intern'])
+                ->default('employee');
         });
 
         Schema::create('materials', function (Blueprint $table) {

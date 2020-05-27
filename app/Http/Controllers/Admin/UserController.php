@@ -11,6 +11,6 @@ class UserController extends Controller
     public function create(RegisterEmployee $request)
     {
         $user = User::create($request->validated());
-        return response()->json($user);
+        return response()->json($user, 201);
     }
 }
