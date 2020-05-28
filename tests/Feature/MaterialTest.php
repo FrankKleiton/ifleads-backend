@@ -22,8 +22,7 @@ class MaterialTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->getJson('/api/materials');
 
-        $response->assertStatus(200)
-                ->assertJsonCount(3);
+        $response->assertStatus(200)->assertJsonCount(3);
     }
 
      /** @test */

@@ -38,8 +38,8 @@ class RemakeMigrations extends Migration
 
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->string('tooker_id')->notNullable();
-            $table->dateTime('loan_time')->nullable();
+            $table->string('tooker_id', 60)->nullable(false);
+            $table->dateTime('loan_time')->nullable(false);
             $table->dateTime('return_time')->nullable();
             $table->softDeletes('deleted_at');
             $table->foreignId('user_id');
