@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Services\Auth\JsonWebToken;
 use App\User;
 use App\Material;
 use App\Loan;
@@ -35,7 +36,10 @@ class LoanTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(Material::class)->create();
+        $material = factory(Material::class)->create([
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ]);
 
         $body = [
             'tooker_id' => '20161038060041',
@@ -53,6 +57,32 @@ class LoanTest extends TestCase
             ]);
     }
 
+        /** @test */
+    public function shouldThrowAnErrorIfItIsLostMaterial()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $lost_material = factory(Material::class)->create([
+            'returner_registration_mark' => '20161038060041',
+        ]);
+
+        $body = [
+            'tooker_id' => '20161038060041',
+            'material_id' => $lost_material->id
+        ];
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('api/loans', $body);
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'message' => "Lost Materials can't be loan"
+            ]);
+
+    }
+
     /** @test */
     public function shouldUpdateALoan()
     {
@@ -62,16 +92,47 @@ class LoanTest extends TestCase
 
         $loan = factory(Loan::class)->create();
 
-        $body = [
-            'return_time' => date('c')
-        ];
+        $response = $this->withHeaders($authorizationHeader)
+            ->putJson("api/loans/$loan->id");
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function shouldThrowAnErrorIfMaterialAlreadyReturned()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $loan = factory(Loan::class)->create([
+            'return_time' => now()
+        ]);
 
         $response = $this->withHeaders($authorizationHeader)
-            ->putJson("api/loans/$loan->id", $body);
+            ->putJson("api/loans/$loan->id");
 
-        $response->assertStatus(200)
+        $response->assertStatus(400)
             ->assertJson([
-                'return_time' => $body['return_time']
+                'message' => 'Material already returned'
+            ]);
+    }
+
+    /** @test */
+    public function shouldThrowAnErrorIfLoanDoesNotExists()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $nonexistentId = 10;
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->putJson("api/loans/$nonexistentId");
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'message' => "The provided loan doesn't exists"
             ]);
     }
 
@@ -89,6 +150,6 @@ class LoanTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDeleted($table, [ 'id' => $loan->id ]);
+        $this->assertSoftDeleted('loans', [ 'id' => $loan->id ]);
     }
 }

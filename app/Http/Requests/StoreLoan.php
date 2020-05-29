@@ -23,9 +23,10 @@ class StoreLoan extends FormRequest
      */
     public function rules()
     {
+        // tooker_id = matrícula
         return [
-            'tooker_id' => 'required|integer',
-            'material_id' => 'required|integer',
+            'tooker_id' => 'required|string|max:60',
+            'material_id' => 'exists:materials,id'
         ];
     }
 }

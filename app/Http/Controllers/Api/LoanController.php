@@ -10,13 +10,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Loan;
 use Illuminate\Support\Facades\Auth;
 
+
 class LoanController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('checkLostMaterial')->only('store');
-    }
-
     /**
      * Display a listing of the loans.
      *
@@ -40,6 +36,13 @@ class LoanController extends Controller
         $info = (object) $request->validated();
 
         $material = Material::find($info->material_id);
+
+        if ($material->returner_registration_mark) {
+            return response()->json([
+                'status' => 'forbidden',
+                'message' => "Lost Materials can't be loan"
+            ], 403);
+        }
 
         $loan = new Loan;
         $loan->fill([
@@ -92,7 +95,7 @@ class LoanController extends Controller
             return response()->json([
                 'status' => 'fail',
                 'message' => !$loan
-                    ? "The provided loan does't exists"
+                    ? "The provided loan doesn't exists"
                     : 'Material already returned'
             ], 400);
         }

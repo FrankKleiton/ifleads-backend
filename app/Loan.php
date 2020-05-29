@@ -15,7 +15,7 @@ class Loan extends Model
      *
      * @var array
      */
-    protected $fillable = ['tooker_id', 'loan_time', 'loaned'];
+    protected $fillable = ['tooker_id', 'loan_time'];
 
     /**
      * Define if the model's table will have
