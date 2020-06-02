@@ -24,10 +24,10 @@ class RegisterEmployee extends FormRequest
     public function rules()
     {
         return [
-            'nome' => 'required|string|between:6,60',
-            'email' => 'required|email|unique:usuarios',
-            'senha' => 'required|string|between:8,80',
-            'role' => 'required|integer|between:2,3'
+            'name' => 'required|string|between:6,60',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|between:8,80',
+            'role' => 'required|string'
         ];
     }
 }

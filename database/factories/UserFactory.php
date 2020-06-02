@@ -19,10 +19,12 @@ use Illuminate\Support\Facades\Hash;
 */
 
 $factory->define(User::class, function (Faker $faker) {
+    $roles = ['employee', 'intern'];
+
     return [
-        'nome' => $faker->name,
+        'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'senha' => Hash::make('Narutinho'),
-        'role' => 1,
+        'password' => 'Narutinho',
+        'role' => $roles[random_int(0, 1)]
     ];
 });

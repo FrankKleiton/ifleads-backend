@@ -7,15 +7,6 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-
-    /**
-     * Define a custom name for the database
-     * table.
-     *
-     * @var string
-     */
-    protected $table = 'usuarios';
-
     /**
      * Define the mass assignable attributes
      *
@@ -28,7 +19,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = ['senha'];
+    protected $hidden = ['password'];
 
     /**
      * Define if the model's table will have
@@ -46,7 +37,7 @@ class User extends Authenticatable
     public static function booted()
     {
         static::creating(function ($user) {
-            $user->senha = Hash::make($user->senha);
+            $user->password = Hash::make($user->password);
         });
     }
 
@@ -60,7 +51,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return intval($this->role) === 1;
+        return $this->role === 'admin';
     }
 
     /**
@@ -71,8 +62,4 @@ class User extends Authenticatable
         return $this->hasMany('App\Loan', 'user_id');
     }
 
-    public function materials()
-    {
-        return $this->hasMany('\App\Material', 'usuario_id');
-    }
 }

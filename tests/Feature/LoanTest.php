@@ -3,148 +3,153 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Services\Auth\JsonWebToken;
 use App\User;
+use App\Material;
+use App\Loan;
 
-class MaterialTest extends TestCase
+class LoanTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function shouldReturnsAnArrayMaterials()
+    public function shouldReturnACollectionOfLoans()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $materials = factory(\App\Material::class, 3)->create();
+        factory(Loan::class, 3)->create();
+
         $response = $this->withHeaders($authorizationHeader)
-            ->getJson('/api/materials');
+            ->getJson('api/loans');
 
         $response->assertStatus(200)->assertJsonCount(3);
     }
 
-     /** @test */
-    public function shouldReturnsOneMaterial()
+    /** @test */
+    public function shouldCreateANewLoan()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
-            'name' => 'Material of Test'
+        $material = factory(Material::class)->create([
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
         ]);
 
-        $response = $this->withHeaders($authorizationHeader)
-            ->getJson("/api/materials/{$material->id}");
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'name' => $material->name
-            ]);
-    }
-
-    /** @test */
-    public function shouldCreatesANewMaterial()
-    {
-        $user = factory(User::class)->create();
-        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
-        $authorizationHeader = ['Authorization' => "Bearer $token"];
-
         $body = [
-            'name' => 'Material',
-            'description' => 'It is only to environment of test',
+            'tooker_id' => '20161038060041',
+            'material_id' => $material->id
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials', $body);
+            ->postJson('api/loans', $body);
 
         $response->assertStatus(201)
             ->assertJson([
-                'name' => $body['name'],
-                'description' => $body['description']
+                'user_id' => $user->id,
+                'tooker_id' => $body['tooker_id'],
+                'material_id' => $body['material_id']
             ]);
     }
 
-    /** @test */
-    public function shouldUpdatesAMaterial()
+        /** @test */
+    public function shouldThrowAnErrorIfItIsLostMaterial()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
-            'name' => 'Material of Test'
+        $lost_material = factory(Material::class)->create([
+            'returner_registration_mark' => '20161038060041',
+        ]);
+
+        $body = [
+            'tooker_id' => '20161038060041',
+            'material_id' => $lost_material->id
+        ];
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('api/loans', $body);
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'message' => "Lost Materials can't be loan"
+            ]);
+
+    }
+
+    /** @test */
+    public function shouldUpdateALoan()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $loan = factory(Loan::class)->create();
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->putJson("api/loans/$loan->id");
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function shouldThrowAnErrorIfMaterialAlreadyReturned()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $loan = factory(Loan::class)->create([
+            'return_time' => now()
         ]);
 
         $response = $this->withHeaders($authorizationHeader)
-            ->putJson("/api/materials/{$material->id}", [
-                'name' => 'Material of Test Updated'
-            ]);
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'name' => 'Material of Test Updated'
-            ]);
-    }
-
-    /** @test */
-    public function shouldThrowAnErrorIfHadNoMaterialToBeUpdated()
-    {
-        $user = factory(User::class)->create();
-        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
-        $authorizationHeader = ['Authorization' => "Bearer $token"];
-
-        $unexistMaterialId = 10;
-
-        $response = $this->withHeaders($authorizationHeader)
-            ->putJson("/api/materials/{$unexistMaterialId}", [
-                'name' => 'Material of Test Updated'
-            ]);
+            ->putJson("api/loans/$loan->id");
 
         $response->assertStatus(400)
-            ->assertExactJson([
-                 'error' => "Material doesn't exists"
+            ->assertJson([
+                'message' => 'Material already returned'
             ]);
     }
 
     /** @test */
-    public function shouldDeletesAMaterial()
+    public function shouldThrowAnErrorIfLoanDoesNotExists()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
-            'name' => 'Material of Test'
-        ]);
+        $nonexistentId = 10;
 
         $response = $this->withHeaders($authorizationHeader)
-            ->deleteJson("/api/materials/{$material->id}");
+            ->putJson("api/loans/$nonexistentId");
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'message' => "The provided loan doesn't exists"
+            ]);
+    }
+
+    /** @test */
+    public function shouldDeleteALoan()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $loan = factory(Loan::class)->create();
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->deleteJson("api/loans/$loan->id");
 
         $response->assertStatus(200);
 
-        $this->assertSoftDeleted('materials', [
-            'name' => $material->name
-        ]);
-    }
-
-    /** @test */
-    public function shouldThrowAnErrorIfHadNoMaterialToBeDeleted()
-    {
-        $user = factory(User::class)->create();
-        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
-        $authorizationHeader = ['Authorization' => "Bearer $token"];
-
-        $unexistMaterialId = 10;
-
-        $response = $this->withHeaders($authorizationHeader)
-            ->deleteJson("/api/materials/{$unexistMaterialId}");
-
-        $response->assertStatus(400)
-            ->assertExactJson([
-                'error' => "Material doesn't exists"
-            ]);
+        $this->assertSoftDeleted('loans', [ 'id' => $loan->id ]);
     }
 }
