@@ -26,6 +26,9 @@ Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
     Route::post('/materials/losts', 'LostMaterialController@store')
         ->name('lost.material');
 
+    Route::patch('/materials/losts/{id}', 'LostMaterialController@update')
+        ->name('lost.took');
+
     Route::apiResource('loans', 'LoanController');
 });
 
