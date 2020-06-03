@@ -11,7 +11,12 @@ class MaterialController extends Controller
 {
     public function index()
     {
-        $materials = Material::all();
+        $materials = Material::where([
+            ['amout', '>', 1],
+            ['returner_registration_mark', '=', null],
+            ['tooker_registration_mark', '=', null]
+        ])->get();
+
         return response()->json($materials);
     }
 
