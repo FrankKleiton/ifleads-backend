@@ -37,6 +37,7 @@ class LoanTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(Material::class)->create([
+            'amount' => 2,
             'returner_registration_mark' => null,
             'tooker_registration_mark' => null
         ]);
@@ -49,11 +50,44 @@ class LoanTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->postJson('api/loans', $body);
 
+        $material->refresh();
+
         $response->assertStatus(201)
             ->assertJson([
                 'user_id' => $user->id,
                 'tooker_id' => $body['tooker_id'],
                 'material_id' => $body['material_id']
+            ]);
+
+        $this->assertEquals(
+            $material->amount, 1, 'The material amount should be decremented.'
+        );
+    }
+
+    /** @test */
+    public function shouldThrowAnErrorIfThereIsNotMaterial()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $material = factory(Material::class)->create([
+            'amount' => 0,
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ]);
+
+        $body = [
+            'tooker_id' => '20161038060002',
+            'material_id' => $material->id
+        ];
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('api/loans', $body);
+
+        $response->assertStatus(400)
+            ->assertJsonFragment([
+                'message' => sprintf('The material amount is in %d, only material in stock can be loaned!', $material->amount)
             ]);
     }
 
