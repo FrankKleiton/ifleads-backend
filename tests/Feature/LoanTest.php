@@ -37,14 +37,17 @@ class LoanTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(Material::class)->create([
-            'amount' => 2,
+            'amount' => 3,
             'returner_registration_mark' => null,
             'tooker_registration_mark' => null
         ]);
+        $material_amount = $material->amount;
 
+        $amount = 2;
         $body = [
             'tooker_id' => '20161038060041',
-            'material_id' => $material->id
+            'material_id' => $material->id,
+            'material_amount' => $amount
         ];
 
         $response = $this->withHeaders($authorizationHeader)
@@ -60,8 +63,38 @@ class LoanTest extends TestCase
             ]);
 
         $this->assertEquals(
-            $material->amount, 1, 'The material amount should be decremented.'
+            $material->amount,
+            $material_amount - $amount,
+            'The material amount should be decremented.'
         );
+    }
+
+    /** @test */
+    public function shouldThrownAnErrorIfLoanAmountGreaterThanMaterialAmount()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $material = factory(Material::class)->create([
+            'amount' => 3,
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ]);
+
+        $body = [
+            'material_id' => $material->id,
+            'tooker_id' => '2061038060002',
+            'material_amount' => 5
+        ];
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('api/loans', $body);
+
+        $response->assertStatus(400)
+            ->assertJsonFragment([
+                'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount),
+            ]);
     }
 
     /** @test */
@@ -87,7 +120,7 @@ class LoanTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJsonFragment([
-                'message' => sprintf('The material amount is in %d, only material in stock can be loaned!', $material->amount)
+                'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount)
             ]);
     }
 
