@@ -41,6 +41,7 @@ class RemakeMigrations extends Migration
             $table->string('tooker_id', 60)->nullable(false);
             $table->dateTime('loan_time')->nullable(false);
             $table->dateTime('return_time')->nullable();
+            $table->integer('material_amount')->nullable();
             $table->softDeletes('deleted_at');
             $table->foreignId('user_id');
             $table->foreign('user_id')
