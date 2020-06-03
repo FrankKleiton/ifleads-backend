@@ -117,7 +117,7 @@ class LoanController extends Controller
         $loan->return_time = now();
 
         $material = $loan->material()->first();
-        $material->amount += 1;
+        $material->amount += $loan->material_amount;
         $material->save();
 
         $loan->save();
