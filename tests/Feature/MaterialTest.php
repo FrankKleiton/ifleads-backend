@@ -6,19 +6,24 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Services\Auth\JsonWebToken;
 use App\User;
+use App\Material;
 
 class MaterialTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function shouldReturnsAnArrayMaterials()
+    public function shouldReturnsAListOfMaterials()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $materials = factory(\App\Material::class, 3)->create();
+        $materials = factory(Material::class, 3)->create([
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ]);
+
         $response = $this->withHeaders($authorizationHeader)
             ->getJson('/api/materials');
 
@@ -32,7 +37,7 @@ class MaterialTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
+        $material = factory(Material::class)->create([
             'name' => 'Material of Test'
         ]);
 
@@ -74,7 +79,7 @@ class MaterialTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
+        $material = factory(Material::class)->create([
             'name' => 'Material of Test'
         ]);
 
@@ -116,7 +121,7 @@ class MaterialTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $material = factory(\App\Material::class)->create([
+        $material = factory(Material::class)->create([
             'name' => 'Material of Test'
         ]);
 
@@ -146,5 +151,32 @@ class MaterialTest extends TestCase
             ->assertExactJson([
                 'error' => "Material doesn't exists"
             ]);
+    }
+
+    /** @test */
+    public function shoudReturnsOnlyMaterialsThatCanBeLoanded()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        // lost material
+        factory(Material::class)->create([
+            'amount' => 2,
+            'returner_registration_mark' => '20161038060041'
+        ]);
+
+        // normal materials
+        factory(Material::class, 2)->create([
+            'amount' => 2,
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/materials');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2);
     }
 }
