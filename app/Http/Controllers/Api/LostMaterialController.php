@@ -13,7 +13,7 @@ class LostMaterialController extends Controller
         $returned = $request->query('returned');
 
         $materials = Material::where(
-            'returner_registration_mark', '!=', null
+            'returner_registration_mark', '<>', null
         )->get();
 
         if ($returned === "true") {
