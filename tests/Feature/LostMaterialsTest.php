@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Services\Auth\JsonWebToken;
 use App\User;
+use App\Material;
 
 class LostMaterialsTest extends TestCase
 {
@@ -25,7 +26,7 @@ class LostMaterialsTest extends TestCase
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $body);
+            ->postJson('/api/losts/materials', $body);
 
         $response->assertStatus(201)
             ->assertJson([
@@ -48,7 +49,7 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => '20161038060041'
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithNameTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithNameTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithDescriptionTypeIncorrect = [
@@ -57,7 +58,7 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => '20161038060041'
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithDescriptionTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithDescriptionTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithMatriculaTypeIncorrect = [
@@ -66,7 +67,60 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => 20161038060041
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithMatriculaTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithMatriculaTypeIncorrect);
         $response->assertStatus(422);
+    }
+
+    /** @test **/
+    public function shouldListAllLostMaterials()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 3)->create();
+        factory(Material::class, 2)->create([
+            'tooker_registration_mark' => null
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(5);
+    }
+
+    /** @test **/
+    public function shouldListOnlyLostMaterialsThatWereNotReturnedToTheOwner()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 3)->create([
+            'tooker_registration_mark' => null
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials?returned=false');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(3);
+    }
+
+    /** @test **/
+    public function shouldListOnlyLostMaterialsThatWereReturnedToTheOwner()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 2)->create();
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials?returned=true');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2);
     }
 }
