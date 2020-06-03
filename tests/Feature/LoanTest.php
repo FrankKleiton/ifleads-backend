@@ -65,7 +65,7 @@ class LoanTest extends TestCase
         $this->assertEquals(
             $material->amount,
             $material_amount - $amount,
-            'The material amount should be decremented.'
+            'The material amount must be decremented.'
         );
     }
 
@@ -157,12 +157,27 @@ class LoanTest extends TestCase
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
-        $loan = factory(Loan::class)->create();
+        $loan = factory(Loan::class)->create([
+            'material_amount' => 5
+        ]);
+
+        $loanMaterialAmount = $loan->material_amount;
+
+
+        $material = $loan->material()->first();
+        $materialAmount = $material->amount;
 
         $response = $this->withHeaders($authorizationHeader)
             ->putJson("api/loans/$loan->id");
 
+        $material->refresh();
+
         $response->assertStatus(200);
+        $this->assertEquals(
+            $material->amount,
+            $materialAmount + $loanMaterialAmount,
+            'The material amount must be incremented'
+        );
     }
 
     /** @test */
