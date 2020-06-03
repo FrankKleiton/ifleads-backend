@@ -20,10 +20,12 @@ class LostMaterialController extends Controller
             $materials = $materials->filter(function ($material) {
                 return ! is_null($material->tooker_registration_mark);
             });
-        } else if ($returned === "false") {
-            $materials = $materials->filter(function ($material) {
-                return is_null($material->tooker_registration_mark);
-            });
+        } else {
+            if ($returned === "false") {
+                $materials = $materials->filter(function ($material) {
+                    return is_null($material->tooker_registration_mark);
+                });
+            }
         }
 
         return response()->json($materials);
