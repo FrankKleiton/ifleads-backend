@@ -20,6 +20,7 @@ class MaterialTest extends TestCase
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $materials = factory(Material::class, 3)->create([
+            'amount' => 2,
             'returner_registration_mark' => null,
             'tooker_registration_mark' => null
         ]);
