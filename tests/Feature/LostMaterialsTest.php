@@ -26,7 +26,7 @@ class LostMaterialsTest extends TestCase
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $body);
+            ->postJson('/api/losts/materials', $body);
 
         $response->assertStatus(201)
             ->assertJson([
@@ -49,7 +49,7 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => '20161038060041'
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithNameTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithNameTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithDescriptionTypeIncorrect = [
@@ -58,7 +58,7 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => '20161038060041'
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithDescriptionTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithDescriptionTypeIncorrect);
         $response->assertStatus(422);
 
         $bodyWithMatriculaTypeIncorrect = [
@@ -67,7 +67,7 @@ class LostMaterialsTest extends TestCase
             'returner_registration_mark' => 20161038060041
         ];
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('/api/materials/losts', $bodyWithMatriculaTypeIncorrect);
+            ->postJson('/api/losts/materials', $bodyWithMatriculaTypeIncorrect);
         $response->assertStatus(422);
     }
 
@@ -87,9 +87,8 @@ class LostMaterialsTest extends TestCase
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->patchJson("/api/materials/losts/$lostMaterial->id", $body);
+            ->patchJson("/api/losts/materials/$lostMaterial->id", $body);
 
-        $response->dump();
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('materials', [
@@ -111,7 +110,7 @@ class LostMaterialsTest extends TestCase
         $nonexistentId = 1;
 
         $response = $this->withHeaders($authorizationHeader)
-            ->patchJson("/api/materials/losts/$nonexistentId", $body);
+            ->patchJson("/api/losts/materials/$nonexistentId", $body);
 
         $response->assertStatus(404)
             ->assertJson([
@@ -136,7 +135,7 @@ class LostMaterialsTest extends TestCase
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->patchJson("/api/materials/losts/$lostMaterial->id", $incorrectBody);
+            ->patchJson("/api/losts/materials/$lostMaterial->id", $incorrectBody);
 
         $response->assertStatus(422);
     }
