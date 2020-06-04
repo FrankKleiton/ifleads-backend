@@ -23,8 +23,11 @@ Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
 
     Route::apiResource('/materials', 'MaterialController');
 
-    Route::post('/materials/losts', 'LostMaterialController@store')
+    Route::post('/losts/materials', 'LostMaterialController@store')
         ->name('lost.material');
+
+    Route::patch('/losts/materials/{id}', 'LostMaterialController@update')
+        ->name('lost.took');
 
     Route::apiResource('loans', 'LoanController');
 });
