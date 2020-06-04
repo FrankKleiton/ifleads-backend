@@ -110,14 +110,38 @@ class MaterialTest extends TestCase
     }
 
     /** @test */
-    public function shouldDeletesAMaterial()
+    public function shouldDeleteAMaterialIfAmountZero()
     {
         $user = factory(User::class)->create();
         $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
         $authorizationHeader = ['Authorization' => "Bearer $token"];
 
         $material = factory(\App\Material::class)->create([
+            'amount' => 0,
             'name' => 'Material of Test'
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->deleteJson("/api/materials/{$material->id}");
+
+        $response->assertStatus(204);
+
+        $this->assertSoftDeleted('materials', [
+            'name' => $material->name
+        ]);
+    }
+
+    /** @test */
+    public function shouldDeleteAMaterialIfAmountGreaterThanZero()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $amount = 2;
+        $material = factory(\App\Material::class)->create([
+            'name' => 'Material of Test',
+            'amount' => $amount
         ]);
 
         $response = $this->withHeaders($authorizationHeader)
@@ -125,9 +149,13 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertSoftDeleted('materials', [
-            'name' => $material->name
-        ]);
+        $material->refresh();
+
+        $this->assertEquals(
+            --$amount,
+            $material->amount,
+            'The material amount must be decremented.'
+        );
     }
 
     /** @test */
