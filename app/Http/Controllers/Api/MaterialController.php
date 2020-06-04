@@ -57,12 +57,23 @@ class MaterialController extends Controller
     public function destroy($id)
     {
         $material = Material::find($id);
+
         if (!$material) {
             return response()->json([
                 'error' => "Material doesn't exists"
             ], 400);
+        } else {
+            // The != was used because in tests the amount is not being perceived as integer
+            if ($material->amount != 0) {
+                --$material->amount;
+                $material->save();
+
+                return response()->json($material, 200);
+            }
         }
 
         $material->delete();
+
+        return response()->json([], 204);
     }
 }
