@@ -11,21 +11,18 @@ class LostMaterialController extends Controller
     public function index(Request $request)
     {
         $returned = $request->query('returned');
+        $materials = null;
 
-        $materials = Material::where(
-            'returner_registration_mark', '<>', null
-        )->get();
-
-        if ($returned === "true") {
-            $materials = $materials->filter(function ($material) {
-                return ! is_null($material->tooker_registration_mark);
-            });
+        if ((is_null($returned)) || ($returned !== "true" && $returned !== "false")) {
+            $materials = Material::all();
         } else {
-            if ($returned === "false") {
-                $materials = $materials->filter(function ($material) {
-                    return is_null($material->tooker_registration_mark);
-                });
-            }
+            $materials = Material::when($returned, function ($query, $returned) {
+                            return ($returned === "true")
+                                ? $query->whereNotNull('tooker_registration_mark')
+                                : $query->whereNotNull('returner_registration_mark')
+                                        ->whereNull('tooker_registration_mark');
+                        })
+                        ->get();
         }
 
         return response()->json($materials);
