@@ -63,8 +63,8 @@ class LoanTest extends TestCase
             ]);
 
         $this->assertEquals(
-            $material->amount,
             $material_amount - $amount,
+            $material->amount,
             'The material amount must be decremented.'
         );
     }
@@ -174,8 +174,8 @@ class LoanTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals(
-            $material->amount,
             $materialAmount + $loanMaterialAmount,
+            $material->amount,
             'The material amount must be incremented'
         );
     }
