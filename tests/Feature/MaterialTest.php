@@ -180,4 +180,33 @@ class MaterialTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(2);
     }
+
+    /** @test */
+    public function shouldThrowErrorIfTryToCreateDuplicatedMaterial()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        $body = [
+            'name' => 'Caixa de Som',
+            'description' => 'Caixa de som estéreo.',
+            'returner_registration_mark' => null,
+            'tooker_registration_mark' => null
+        ];
+
+        $material = factory(Material::class)->create($body);
+
+        $body['returner_registration_mark'] = '20161038060002';
+
+        $lostMaterial = factory(Material::class)->create($body);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->postJson('/api/materials', $body);
+
+        $response->assertStatus(400)
+            ->assertJsonFragment([
+            'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+        ]);
+    }
 }
