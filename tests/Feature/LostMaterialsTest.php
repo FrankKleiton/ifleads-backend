@@ -68,6 +68,7 @@ class LostMaterialsTest extends TestCase
         ];
         $response = $this->withHeaders($authorizationHeader)
             ->postJson('/api/losts/materials', $bodyWithMatriculaTypeIncorrect);
+
         $response->assertStatus(422);
     }
 
@@ -138,5 +139,58 @@ class LostMaterialsTest extends TestCase
             ->patchJson("/api/losts/materials/$lostMaterial->id", $incorrectBody);
 
         $response->assertStatus(422);
+    }
+
+    /** @test **/
+    public function shouldListAllLostMaterials()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 3)->create();
+        factory(Material::class, 2)->create([
+            'tooker_registration_mark' => null
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(5);
+    }
+
+    /** @test **/
+    public function shouldListOnlyLostMaterialsThatWereNotReturnedToTheOwner()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 3)->create([
+            'tooker_registration_mark' => null
+        ]);
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials?returned=false');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(3);
+    }
+
+    /** @test **/
+    public function shouldListOnlyLostMaterialsThatWereReturnedToTheOwner()
+    {
+        $user = factory(User::class)->create();
+        $token = resolve(JsonWebToken::class)->generateToken($user->toArray());
+        $authorizationHeader = ['Authorization' => "Bearer $token"];
+
+        factory(Material::class, 2)->create();
+
+        $response = $this->withHeaders($authorizationHeader)
+            ->getJson('/api/losts/materials?returned=true');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2);
     }
 }

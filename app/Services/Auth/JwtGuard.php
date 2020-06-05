@@ -76,7 +76,7 @@ class JwtGuard implements Guard
     {
       $user = User::where('email', $credentials['email'])->first();
 
-      if (!Hash::check($credentials['password'], $user->password)) {
+      if (is_null($user) || !Hash::check($credentials['password'], $user->password)) {
           return null;
       }
 
