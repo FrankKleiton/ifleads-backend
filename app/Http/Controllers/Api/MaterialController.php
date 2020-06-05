@@ -27,7 +27,10 @@ class MaterialController extends Controller
             'description' => 'string|required'
         ]);
 
-        $material = Material::where('name', $validatedData['name'])->first();
+        $material = Material::where([
+            ['name', '=', $validatedData['name']],
+            ['returner_registration_mark', '=', null]
+        ])->first();
 
         // I make that way because in the way that we structure the database,
         // It's possible to have a Lost Material and a Material with the same
