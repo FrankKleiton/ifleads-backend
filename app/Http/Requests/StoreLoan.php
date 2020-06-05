@@ -27,7 +27,7 @@ class StoreLoan extends FormRequest
         return [
             'tooker_id' => 'required|string|max:60',
             'material_id' => 'exists:materials,id',
-            'material_amount' => 'integer|min:0'
+            'material_amount' => 'integer|min:1'
         ];
     }
 }
