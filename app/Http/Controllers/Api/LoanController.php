@@ -42,13 +42,27 @@ class LoanController extends Controller
                 'status' => 'forbidden',
                 'message' => "Lost Materials can't be loan"
             ], 403);
+        } else {
+            if (
+                ! $material->amount
+                || $material->amount < $info->material_amount
+            ) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount)
+                ], 400);
+            }
         }
 
         $loan = new Loan;
         $loan->fill([
             'tooker_id' => $info->tooker_id,
-            'loan_time' => now()
+            'material_amount' => $info->material_amount,
+            'loan_time' => now(),
         ]);
+
+        $material->amount -= $info->material_amount;
+        $material->save();
 
         $loan->material()->associate($material);
         $loan->user()->associate(Auth::user());
@@ -101,6 +115,11 @@ class LoanController extends Controller
         }
 
         $loan->return_time = now();
+
+        $material = $loan->material()->first();
+        $material->amount += $loan->material_amount;
+        $material->save();
+
         $loan->save();
 
         return response()->json($loan, 200);
