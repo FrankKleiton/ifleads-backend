@@ -27,6 +27,21 @@ class MaterialController extends Controller
             'description' => 'string|required'
         ]);
 
+        $material = Material::where([
+            ['name', '=', $validatedData['name']],
+            ['returner_registration_mark', '=', null]
+        ])->first();
+
+        // I make that way because in the way that we structure the database,
+        // It's possible to have a Lost Material and a Material with the same
+        // name.
+        if (! is_null($material)) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+            ], 400);
+        }
+
         $material = Material::create($validatedData);
         return response()->json($material, 201);
     }
