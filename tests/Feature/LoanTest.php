@@ -46,12 +46,11 @@ class LoanTest extends TestCase
         $amount = 2;
         $body = [
             'tooker_id' => '20161038060041',
-            'material_id' => $material->id,
-            'material_amount' => $amount
+            'material_amount' => $amount,
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('api/loans', $body);
+            ->postJson("api/loans/materials/{$material->id}", $body);
 
         $material->refresh();
 
@@ -59,7 +58,7 @@ class LoanTest extends TestCase
             ->assertJson([
                 'user_id' => $user->id,
                 'tooker_id' => $body['tooker_id'],
-                'material_id' => $body['material_id']
+                'material_id' => $material->id
             ]);
 
         $this->assertEquals(
@@ -83,17 +82,19 @@ class LoanTest extends TestCase
         ]);
 
         $body = [
-            'material_id' => $material->id,
             'tooker_id' => '2061038060002',
             'material_amount' => 5
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('api/loans', $body);
+            ->postJson("api/loans/materials/{$material->id}", $body);
 
         $response->assertStatus(400)
-            ->assertJsonFragment([
-                'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount),
+            ->assertJson([
+                'message' => sprintf(
+                    'The material amount %d is insuficient to do a loan.',
+                    $material->amount
+                ),
             ]);
     }
 
@@ -112,19 +113,18 @@ class LoanTest extends TestCase
 
         $body = [
             'tooker_id' => '20161038060002',
-            'material_id' => $material->id
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('api/loans', $body);
+            ->postJson("api/loans/materials/{$material->id}", $body);
 
-        $response->assertStatus(400)
-            ->assertJsonFragment([
-                'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount)
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'The given data was invalid.'
             ]);
     }
 
-        /** @test */
+    /** @test */
     public function shouldThrowAnErrorIfItIsLostMaterial()
     {
         $user = factory(User::class)->create();
@@ -137,11 +137,11 @@ class LoanTest extends TestCase
 
         $body = [
             'tooker_id' => '20161038060041',
-            'material_id' => $lost_material->id
+            'material_amount' => 3
         ];
 
         $response = $this->withHeaders($authorizationHeader)
-            ->postJson('api/loans', $body);
+            ->postJson("api/loans/materials/{$lost_material->id}", $body);
 
         $response->assertStatus(403)
             ->assertJson([
@@ -212,9 +212,9 @@ class LoanTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->putJson("api/loans/$nonexistentId");
 
-        $response->assertStatus(400)
+        $response->assertStatus(404)
             ->assertJson([
-                'message' => "The provided loan doesn't exists"
+                'message' => "No query results for model [App\\Loan] $nonexistentId"
             ]);
     }
 
