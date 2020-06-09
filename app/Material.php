@@ -17,6 +17,7 @@ class Material extends Model
     protected $fillable = [
         'name',
         'description',
+        'amount',
         'returner_registration_mark'
     ];
 

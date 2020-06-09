@@ -65,7 +65,7 @@ class MaterialController extends Controller
         $validatedData = $request->validate([
             'name' => 'string',
             'description' => 'string',
-            'amount' => 'numeric'
+            'amount' => 'integer'
         ]);
 
         $material->update($validatedData);
