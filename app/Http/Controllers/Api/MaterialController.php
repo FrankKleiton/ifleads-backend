@@ -12,7 +12,7 @@ class MaterialController extends Controller
     public function index()
     {
         $materials = Material::where([
-            ['amount', '>', 1],
+            ['amount', '>=', 1],
             ['returner_registration_mark', '=', null],
             ['tooker_registration_mark', '=', null]
         ])->get();
