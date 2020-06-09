@@ -26,8 +26,7 @@ class StoreLoan extends FormRequest
         // tooker_id = matrícula
         return [
             'tooker_id' => 'required|string|max:60',
-            'material_id' => 'exists:materials,id',
-            'material_amount' => 'integer|min:1'
+            'material_amount' => 'required|integer|min:1'
         ];
     }
 }
