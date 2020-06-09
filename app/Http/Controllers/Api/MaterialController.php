@@ -46,22 +46,13 @@ class MaterialController extends Controller
         return response()->json($material, 201);
     }
 
-    public function show($id)
+    public function show(Material $material)
     {
-        $material = Material::find($id);
         return response()->json($material);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Material $material)
     {
-        $material = Material::find($id);
-
-        if(!$material) {
-            return response()->json([
-                 'error' => "Material doesn't exists"
-            ], 400);
-        }
-
         $validatedData = $request->validate([
             'name' => 'string',
             'description' => 'string',
@@ -74,15 +65,8 @@ class MaterialController extends Controller
 
     }
 
-    public function destroy($id)
+    public function destroy(Material $material)
     {
-        $material = Material::find($id);
-        if (!$material) {
-            return response()->json([
-                'error' => "Material doesn't exists"
-            ], 400);
-        }
-
         $material->delete();
     }
 }
