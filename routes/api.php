@@ -28,11 +28,12 @@ Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
 
     Route::get('/losts/materials', 'LostMaterialController@index')
       ->name('lost.material.index');
-  
+
     Route::patch('/losts/materials/{id}', 'LostMaterialController@update')
         ->name('lost.took');
 
-    Route::apiResource('loans', 'LoanController');
+    Route::apiResource('loans', 'LoanController')->except(['store']);
+    Route::post('loans/materials/{material}', 'LoanController@store');
 });
 
 Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');

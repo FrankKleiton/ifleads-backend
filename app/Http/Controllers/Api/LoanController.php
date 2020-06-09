@@ -31,11 +31,9 @@ class LoanController extends Controller
      * @param  \App\Http\Requests\StoreLoan  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreLoan $request)
+    public function store(StoreLoan $request, Material $material)
     {
         $info = (object) $request->validated();
-
-        $material = Material::find($info->material_id);
 
         if ($material->returner_registration_mark) {
             return response()->json([
@@ -80,10 +78,8 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Loan $loan)
     {
-        $loan = Loan::find($id);
-
         if (!$loan) {
             return response()->json([
                 'status' => 'fail',
@@ -101,16 +97,12 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Loan $loan)
     {
-        $loan = Loan::find($id);
-
-        if (!$loan || $loan->return_time) {
+        if ($loan->return_time) {
             return response()->json([
                 'status' => 'fail',
-                'message' => !$loan
-                    ? "The provided loan doesn't exists"
-                    : 'Material already returned'
+                'message' => 'Material already returned'
             ], 400);
         }
 
@@ -131,10 +123,8 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Loan $loan)
     {
-        $loan = Loan::find($id);
-
         if (!$loan) {
             return response()->json([
                 'status' => 'fail',
