@@ -3,46 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Material;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreMaterial;
+use App\Http\Requests\UpdateMaterial;
 
 class MaterialController extends Controller
 {
+    private Material $material;
+
+    public function __construct(Material $material)
+    {
+        $this->material = $material;
+    }
+
     public function index()
     {
-        $materials = Material::where([
-            ['amount', '>=', 1],
-            ['returner_registration_mark', '=', null],
-            ['tooker_registration_mark', '=', null]
-        ])->get();
+        $materials = Material::borrowable()->get();
 
         return response()->json($materials);
     }
 
-    public function store(Request $request)
+    public function store(StoreMaterial $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'string|required',
-            'description' => 'string|required'
-        ]);
+        $info = $request->validated();
 
-        $material = Material::where([
-            ['name', '=', $validatedData['name']],
-            ['returner_registration_mark', '=', null]
-        ])->first();
+        $hasBorrowable = $this->material->hasBorrowableWithName($info['name']);
 
-        // I make that way because in the way that we structure the database,
-        // It's possible to have a Lost Material and a Material with the same
-        // name.
-        if (! is_null($material)) {
+
+        if ($hasBorrowable) {
+            // I leave the response that way for the same reason that I put
+            // the business logic in the model instead of using a service
+            // layer: the application is too small. But in bigger application
+            // the responses are decoupled from controllers.
             return response()->json([
                 'status' => 'fail',
-                'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+                'message' => trans('response.duplicated_material')
             ], 400);
         }
 
-        $material = Material::create($validatedData);
+        $material = Material::create($info);
         return response()->json($material, 201);
     }
 
@@ -51,18 +50,11 @@ class MaterialController extends Controller
         return response()->json($material);
     }
 
-    public function update(Request $request, Material $material)
+    public function update(UpdateMaterial $request, Material $material)
     {
-        $validatedData = $request->validate([
-            'name' => 'string',
-            'description' => 'string',
-            'amount' => 'integer'
-        ]);
-
-        $material->update($validatedData);
+        $material->update($request->validated());
 
         return response()->json($material);
-
     }
 
     public function destroy(Material $material)

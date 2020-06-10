@@ -48,4 +48,25 @@ class Material extends Model
     {
         return !is_null($this->returner_registration_mark);
     }
+
+    /**
+     * Scope a query to only return borrowable materials
+     *
+     * @param Builder $query
+     * @return Builder $query
+     */
+    public function scopeBorrowable($query)
+    {
+        return $query->where([
+            ['amount', '>=', 1],
+            ['returner_registration_mark', '=', null],
+            ['tooker_registration_mark', '=', null]
+        ]);
+    }
+
+    public function hasBorrowableWithName(string $name)
+    {
+        $material = $this->borrowable()->where('name', $name)->first();
+        return isset($material);
+    }
 }
