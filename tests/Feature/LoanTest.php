@@ -91,10 +91,7 @@ class LoanTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJson([
-                'message' => sprintf(
-                    'The material amount %d is insuficient to do a loan.',
-                    $material->amount
-                ),
+                'message' => 'The material amount is insuficient to do a loan.'
             ]);
     }
 
@@ -145,7 +142,7 @@ class LoanTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'message' => "Lost Materials can't be loan"
+                'message' => "Lost Materials can't be loaned"
             ]);
 
     }
