@@ -66,6 +66,8 @@ class MaterialTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->postJson('/api/materials', $body);
 
+        $response->dump();
+
         $response->assertStatus(201)
             ->assertJson([
                 'name' => $body['name'],
@@ -206,7 +208,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJsonFragment([
-            'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+            'message' => 'The material already exists. Insert a valid material, please.'
         ]);
     }
 }
