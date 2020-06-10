@@ -57,7 +57,7 @@ class LoanController extends Controller
             'loan_time' => now(),
         ]);
 
-        $material->decrementAmount($info->material_amount);
+        $material->decrement('amount', $info->material_amount);
 
         $loan->material()->associate($material);
         $loan->user()->associate(Auth::user());
@@ -96,7 +96,7 @@ class LoanController extends Controller
         $loan->return_time = now();
 
         $material = $loan->material()->first();
-        $material->incrementAmount($loan->material_amount);
+        $material->increment('amount', $loan->material_amount);
 
         $loan->save();
 

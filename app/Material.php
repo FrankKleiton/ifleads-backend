@@ -76,18 +76,6 @@ class Material extends Model
         return (! $this->amount) || ($this->amount < $materialAmount);
     }
 
-    public function decrementAmount(int $amount)
-    {
-        $this->amount -= $amount;
-        $this->save();
-    }
-
-    public function incrementAmount(int $amount)
-    {
-        $this->amount += $amount;
-        $this->save();
-    }
-
     public function filter($returned)
     {
         return Material::when($returned, function ($query, $returned) {
