@@ -18,7 +18,8 @@ class Material extends Model
         'name',
         'description',
         'amount',
-        'returner_registration_mark'
+        'returner_registration_mark',
+        'tooker_registration_mark'
     ];
 
     /**
@@ -85,5 +86,16 @@ class Material extends Model
     {
         $this->amount += $amount;
         $this->save();
+    }
+
+    public function filter($returned)
+    {
+        return Material::when($returned, function ($query, $returned) {
+            return ($returned === "true")
+                ? $query->whereNotNull('tooker_registration_mark')
+                : $query->whereNotNull('returner_registration_mark')
+                        ->whereNull('tooker_registration_mark');
+        })
+        ->get();
     }
 }
