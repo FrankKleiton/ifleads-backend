@@ -37,7 +37,7 @@ class MaterialController extends Controller
             // the responses are decoupled from controllers.
             return response()->json([
                 'status' => 'fail',
-                'message' => trans('response.duplicated_material')
+                'message' => __('response.duplicated_material')
             ], 400);
         }
 

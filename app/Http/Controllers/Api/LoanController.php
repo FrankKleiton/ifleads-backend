@@ -20,9 +20,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = Loan::all();
-
-        return response()->json($loans);
+        return response()->json(Loan::all());
     }
 
     /**
@@ -38,20 +36,20 @@ class LoanController extends Controller
         if ($material->returner_registration_mark) {
             return response()->json([
                 'status' => 'forbidden',
-                'message' => "Lost Materials can't be loan"
+                'message' => __('response.invalid_material_type')
             ], 403);
-        } else {
-            if (
-                ! $material->amount
-                || $material->amount < $info->material_amount
-            ) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => sprintf('The material amount %d is insuficient to do a loan.', $material->amount)
-                ], 400);
-            }
         }
 
+        if ($material->isAnBorrowableAmount($info->material_amount)) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => __('response.insuficient_material')
+            ], 400);
+        }
+
+        // I leave that way because the application is too small
+        // to use a service pattern and does'nt make sense create
+        // a model method that update another model.
         $loan = new Loan;
         $loan->fill([
             'tooker_id' => $info->tooker_id,
@@ -59,15 +57,11 @@ class LoanController extends Controller
             'loan_time' => now(),
         ]);
 
-        $material->amount -= $info->material_amount;
-        $material->save();
+        $material->decrementAmount($info->material_amount);
 
         $loan->material()->associate($material);
         $loan->user()->associate(Auth::user());
         $loan->save();
-
-        $loan->makeHidden(['material', 'user']);
-        $loan->refresh();
 
         return response()->json($loan, 201);
     }
@@ -80,13 +74,6 @@ class LoanController extends Controller
      */
     public function show(Loan $loan)
     {
-        if (!$loan) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Provide a valid loan, please.'
-            ], 400);
-        }
-
         return response()->json($loan);
     }
 
@@ -102,15 +89,14 @@ class LoanController extends Controller
         if ($loan->return_time) {
             return response()->json([
                 'status' => 'fail',
-                'message' => 'Material already returned'
+                'message' => __('response.material_returned')
             ], 400);
         }
 
         $loan->return_time = now();
 
         $material = $loan->material()->first();
-        $material->amount += $loan->material_amount;
-        $material->save();
+        $material->incrementAmount($loan->material_amount);
 
         $loan->save();
 
@@ -125,13 +111,6 @@ class LoanController extends Controller
      */
     public function destroy(Loan $loan)
     {
-        if (!$loan) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => "Provide a valid loan, please."
-            ], 400);
-        }
-
         $loan->delete();
     }
 }

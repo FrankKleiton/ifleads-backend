@@ -69,4 +69,21 @@ class Material extends Model
         $material = $this->borrowable()->where('name', $name)->first();
         return isset($material);
     }
+
+    public function isAnBorrowableAmount(int $materialAmount)
+    {
+        return (! $this->amount) || ($this->amount < $materialAmount);
+    }
+
+    public function decrementAmount(int $amount)
+    {
+        $this->amount -= $amount;
+        $this->save();
+    }
+
+    public function incrementAmount(int $amount)
+    {
+        $this->amount += $amount;
+        $this->save();
+    }
 }
