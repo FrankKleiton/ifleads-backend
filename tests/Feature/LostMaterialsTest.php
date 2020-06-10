@@ -115,8 +115,7 @@ class LostMaterialsTest extends TestCase
 
         $response->assertStatus(404)
             ->assertJson([
-                'status' => 'fail',
-                'message' => "Lost Material doesn't exists"
+                'message' => 'No query results for model [App\Material] 1'
             ]);
     }
 
