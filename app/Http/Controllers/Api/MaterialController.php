@@ -18,7 +18,7 @@ class MaterialController extends Controller
 
     public function index()
     {
-        $materials = Material::borrowable()->get();
+        $materials = $this->material::borrowable()->get();
 
         return response()->json($materials);
     }
