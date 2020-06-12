@@ -49,6 +49,9 @@ class Loan extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    /**
+     * Hidde attributes in serialization.
+     */
     public function hidden()
     {
         return ['material', 'user'];
