@@ -29,12 +29,7 @@ class MaterialController extends Controller
 
         $hasBorrowable = $this->material->hasBorrowableWithName($info['name']);
 
-
         if ($hasBorrowable) {
-            // I leave the response that way for the same reason that I put
-            // the business logic in the model instead of using a service
-            // layer: the application is too small. But in bigger application
-            // the responses are decoupled from controllers.
             return response()->json([
                 'status' => 'fail',
                 'message' => __('response.duplicated_material')

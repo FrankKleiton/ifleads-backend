@@ -47,9 +47,6 @@ class LoanController extends Controller
             ], 400);
         }
 
-        // I leave that way because the application is too small
-        // to use a service pattern and does'nt make sense create
-        // a model method that update another model.
         $loan = new Loan;
         $loan->fill([
             'tooker_id' => $info->tooker_id,
