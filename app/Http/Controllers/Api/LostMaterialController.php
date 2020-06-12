@@ -23,7 +23,7 @@ class LostMaterialController extends Controller
         $materials = null;
 
         if ($this->isValidFilter($filter)) {
-            $materials = $this->material::all();
+            $materials = $this->material::lost()->get();
         } else {
             $materials = $this->material->filter($filter);
         }
