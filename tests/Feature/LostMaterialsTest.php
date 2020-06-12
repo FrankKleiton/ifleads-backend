@@ -151,6 +151,11 @@ class LostMaterialsTest extends TestCase
         factory(Material::class, 2)->create([
             'tooker_registration_mark' => null
         ]);
+        
+        factory(Material::class, 2)->create([
+            'tooker_registration_mark' => null,
+            'returner_registration_mark' => null
+        ]);
 
         $response = $this->withHeaders($authorizationHeader)
             ->getJson('/api/losts/materials');

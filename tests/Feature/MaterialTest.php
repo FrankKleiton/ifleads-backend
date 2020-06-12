@@ -66,8 +66,6 @@ class MaterialTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->postJson('/api/materials', $body);
 
-        $response->dump();
-
         $response->assertStatus(201)
             ->assertJson([
                 'name' => $body['name'],
