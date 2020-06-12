@@ -40,7 +40,7 @@ class LoanController extends Controller
             ], 403);
         }
 
-        if ($material->isAnBorrowableAmount($info->material_amount)) {
+        if (! $material->isAnBorrowableAmount($info->material_amount)) {
             return response()->json([
                 'status' => 'fail',
                 'message' => __('response.insuficient_material')

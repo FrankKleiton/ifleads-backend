@@ -96,7 +96,7 @@ class Material extends Model
      */
     public function isAnBorrowableAmount(int $materialAmount)
     {
-        return (! $this->amount) || ($this->amount < $materialAmount);
+        return ($this->amount > 0) && ($this->amount > $materialAmount);
     }
 
     /**
