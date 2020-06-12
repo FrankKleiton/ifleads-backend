@@ -9,16 +9,9 @@ use App\Http\Requests\UpdateMaterial;
 
 class MaterialController extends Controller
 {
-    private Material $material;
-
-    public function __construct(Material $material)
-    {
-        $this->material = $material;
-    }
-
     public function index()
     {
-        $materials = $this->material::borrowable()->get();
+        $materials = Material::borrowable()->get();
 
         return response()->json($materials);
     }
@@ -27,7 +20,7 @@ class MaterialController extends Controller
     {
         $info = $request->validated();
 
-        $hasBorrowable = $this->material->hasBorrowableWithName($info['name']);
+        $hasBorrowable = Material::hasBorrowableWithName($info['name']);
 
         if ($hasBorrowable) {
             return response()->json([

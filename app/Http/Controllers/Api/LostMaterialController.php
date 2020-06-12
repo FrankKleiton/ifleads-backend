@@ -10,22 +10,15 @@ use App\Http\Requests\UpdateLostMaterial;
 
 class LostMaterialController extends Controller
 {
-    private Material $material;
-
-    public function __construct(Material $material)
-    {
-        $this->material = $material;
-    }
-
     public function index(Request $request)
     {
         $filter = $request->query('returned');
         $materials = null;
 
         if ($this->isValidFilter($filter)) {
-            $materials = $this->material::lost()->get();
+            $materials = Material::lost()->get();
         } else {
-            $materials = $this->material->filter($filter);
+            $materials = Material::filter($filter);
         }
 
         return response()->json($materials);
@@ -38,7 +31,7 @@ class LostMaterialController extends Controller
 
     public function store(StoreLostMaterial $request)
     {
-        $material = $this->material::create($request->validated());
+        $material = Material::create($request->validated());
 
         return response()->json($material, 201);
     }

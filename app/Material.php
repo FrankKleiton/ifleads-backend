@@ -82,9 +82,9 @@ class Material extends Model
      * @param string $name
      * @return bool
      */
-    public function hasBorrowableWithName(string $name)
+    public static function hasBorrowableWithName(string $name)
     {
-        $material = $this->borrowable()->where('name', $name)->first();
+        $material = self::borrowable()->where('name', $name)->first();
         return isset($material);
     }
 
@@ -105,9 +105,9 @@ class Material extends Model
      * @param string $returned
      * @return Illuminate\Support\Collection
      */
-    public function filter($returned)
+    public static function filter($returned)
     {
-        return Material::when($returned, function ($query, $returned) {
+        return self::when($returned, function ($query, $returned) {
             return ($returned === "true")
                 ? $query->whereNotNull('tooker_registration_mark')
                 : $query->whereNotNull('returner_registration_mark')
