@@ -65,17 +65,46 @@ class Material extends Model
         ]);
     }
 
+    /**
+     * Scope a query to only return lost materials
+     *
+     * @param Builder $query
+     * @return Builder $query
+     */
+    public function scopeLost($query)
+    {
+        return $query->whereNotNull('returner_registration_mark');
+    }
+
+    /**
+     * Check if a material is storaged in the database
+     *
+     * @param string $name
+     * @return bool
+     */
     public function hasBorrowableWithName(string $name)
     {
         $material = $this->borrowable()->where('name', $name)->first();
         return isset($material);
     }
 
+    /**
+     * Check if the aamount passed is a borrowable amount.
+     *
+     * @param int $materialAmount
+     * @return bool
+     */
     public function isAnBorrowableAmount(int $materialAmount)
     {
         return (! $this->amount) || ($this->amount < $materialAmount);
     }
 
+    /**
+     * Search for lost materials returned or not returned to their owners.
+     *
+     * @param string $returned
+     * @return Illuminate\Support\Collection
+     */
     public function filter($returned)
     {
         return Material::when($returned, function ($query, $returned) {
