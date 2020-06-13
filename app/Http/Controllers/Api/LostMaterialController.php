@@ -15,7 +15,7 @@ class LostMaterialController extends Controller
         $filter = $request->query('returned');
         $materials = null;
 
-        if ($this->isValidFilter($filter)) {
+        if ($this->isNotValidFilter($filter)) {
             $materials = Material::lost()->get();
         } else {
             $materials = Material::filter($filter);
@@ -24,7 +24,7 @@ class LostMaterialController extends Controller
         return response()->json($materials);
     }
 
-    private function isValidFilter(?string $filter)
+    private function isNotValidFilter(?string $filter)
     {
         return (! $filter) || ($filter !== "true" && $filter !== "false");
     }
