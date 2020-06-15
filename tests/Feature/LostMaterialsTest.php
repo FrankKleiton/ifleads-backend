@@ -115,8 +115,7 @@ class LostMaterialsTest extends TestCase
 
         $response->assertStatus(404)
             ->assertJson([
-                'status' => 'fail',
-                'message' => "Lost Material doesn't exists"
+                'message' => 'No query results for model [App\Material] 1'
             ]);
     }
 
@@ -151,6 +150,11 @@ class LostMaterialsTest extends TestCase
         factory(Material::class, 3)->create();
         factory(Material::class, 2)->create([
             'tooker_registration_mark' => null
+        ]);
+        
+        factory(Material::class, 2)->create([
+            'tooker_registration_mark' => null,
+            'returner_registration_mark' => null
         ]);
 
         $response = $this->withHeaders($authorizationHeader)

@@ -5,61 +5,40 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Material;
+use App\Http\Requests\StoreLostMaterial;
+use App\Http\Requests\UpdateLostMaterial;
 
 class LostMaterialController extends Controller
 {
     public function index(Request $request)
     {
-        $returned = $request->query('returned');
+        $filter = $request->query('returned');
         $materials = null;
 
-        if ((is_null($returned)) || ($returned !== "true" && $returned !== "false")) {
-            $materials = Material::all();
+        if ($this->isNotValidFilter($filter)) {
+            $materials = Material::lost()->get();
         } else {
-            $materials = Material::when($returned, function ($query, $returned) {
-                            return ($returned === "true")
-                                ? $query->whereNotNull('tooker_registration_mark')
-                                : $query->whereNotNull('returner_registration_mark')
-                                        ->whereNull('tooker_registration_mark');
-                        })
-                        ->get();
+            $materials = Material::filter($filter);
         }
 
         return response()->json($materials);
     }
 
-    public function store(Request $request)
+    private function isNotValidFilter(?string $filter)
     {
-        $validatedData = $request->validate([
-            'name' => 'string|required',
-            'description' => 'string|required',
-            'returner_registration_mark' => 'string|required|max:60'
-        ]);
+        return (! $filter) || ($filter !== "true" && $filter !== "false");
+    }
 
-        $material = Material::create($validatedData);
+    public function store(StoreLostMaterial $request)
+    {
+        $material = Material::create($request->validated());
 
         return response()->json($material, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateLostMaterial $request, Material $material)
     {
-        $lostMaterial = Material::find($id);
-
-        if (!$lostMaterial) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => "Lost Material doesn't exists"
-            ], 404);
-        }
-
-        $validatedData = $request->validate([
-            'tooker_registration_mark' => 'string|required|max:60'
-        ]);
-
-        $lostMaterial->tooker_registration_mark =
-            $validatedData['tooker_registration_mark'];
-
-        $lostMaterial->save();
+        $material->update($request->validated());
 
         return response()->json();
     }

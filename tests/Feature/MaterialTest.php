@@ -109,9 +109,9 @@ class MaterialTest extends TestCase
                 'name' => 'Material of Test Updated'
             ]);
 
-        $response->assertStatus(400)
-            ->assertExactJson([
-                 'error' => "Material doesn't exists"
+        $response->assertStatus(404)
+            ->assertJson([
+                 'message' => "No query results for model [App\Material] $unexistMaterialId"
             ]);
     }
 
@@ -148,9 +148,9 @@ class MaterialTest extends TestCase
         $response = $this->withHeaders($authorizationHeader)
             ->deleteJson("/api/materials/{$unexistMaterialId}");
 
-        $response->assertStatus(400)
-            ->assertExactJson([
-                'error' => "Material doesn't exists"
+        $response->assertStatus(404)
+            ->assertJson([
+                 'message' => "No query results for model [App\Material] $unexistMaterialId"
             ]);
     }
 
@@ -206,7 +206,7 @@ class MaterialTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJsonFragment([
-            'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+            'message' => 'The material already exists. Insert a valid material, please.'
         ]);
     }
 }

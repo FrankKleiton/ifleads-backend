@@ -17,7 +17,7 @@ Route::post('/login', 'Api\Auth\LoginController@login');
 
 
 Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
-    Route::post('/admin/register', 'Admin\UserController@create')
+    Route::post('/admin/register', 'Admin\UserController')
         ->middleware(['onlyAdmin'])
         ->name('admin.create');
 
@@ -28,11 +28,13 @@ Route::group(['namespace' => 'Api', 'middleware' => ['auth:api']], function () {
 
     Route::get('/losts/materials', 'LostMaterialController@index')
       ->name('lost.material.index');
-  
-    Route::patch('/losts/materials/{id}', 'LostMaterialController@update')
+
+    Route::patch('/losts/materials/{material}', 'LostMaterialController@update')
         ->name('lost.took');
 
-    Route::apiResource('loans', 'LoanController');
+    Route::apiResource('loans', 'LoanController')->except(['store']);
+
+    Route::post('loans/materials/{material}', 'LoanController@store');
 });
 
 Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');

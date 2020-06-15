@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreLoan extends FormRequest
+class UpdateMaterial extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,10 @@ class StoreLoan extends FormRequest
      */
     public function rules()
     {
-        // tooker_id = matrícula
         return [
-            'tooker_id' => 'required|string|max:60',
-            'material_amount' => 'required|integer|min:1'
+            'name' => 'string',
+            'description' => 'string',
+            'amount' => 'integer'
         ];
     }
 }

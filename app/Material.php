@@ -17,7 +17,9 @@ class Material extends Model
     protected $fillable = [
         'name',
         'description',
-        'returner_registration_mark'
+        'amount',
+        'returner_registration_mark',
+        'tooker_registration_mark'
     ];
 
     /**
@@ -46,5 +48,71 @@ class Material extends Model
     public function isLost()
     {
         return !is_null($this->returner_registration_mark);
+    }
+
+    /**
+     * Scope a query to only return borrowable materials
+     *
+     * @param Builder $query
+     * @return Builder $query
+     */
+    public function scopeBorrowable($query)
+    {
+        return $query->where([
+            ['amount', '>=', 1],
+            ['returner_registration_mark', '=', null],
+            ['tooker_registration_mark', '=', null]
+        ]);
+    }
+
+    /**
+     * Scope a query to only return lost materials
+     *
+     * @param Builder $query
+     * @return Builder $query
+     */
+    public function scopeLost($query)
+    {
+        return $query->whereNotNull('returner_registration_mark');
+    }
+
+    /**
+     * Check if a material is storaged in the database
+     *
+     * @param string $name
+     * @return bool
+     */
+    public static function hasBorrowableWithName(string $name)
+    {
+        $material = self::borrowable()->where('name', $name)->first();
+        return isset($material);
+    }
+
+    /**
+     * Check if the aamount passed is a borrowable amount.
+     *
+     * @param int $materialAmount
+     * @return bool
+     */
+    public function isAnBorrowableAmount(int $materialAmount)
+    {
+        return ($this->amount > 0) && ($this->amount > $materialAmount);
+    }
+
+    /**
+     * Search for lost materials returned or not returned to their owners.
+     *
+     * @param string $returned
+     * @return Illuminate\Support\Collection
+     */
+    public static function filter($returned)
+    {
+        return self::when($returned, function ($query, $returned) {
+            return ($returned === "true")
+                ? $query->whereNotNull('tooker_registration_mark')
+                : $query->whereNotNull('returner_registration_mark')
+                        ->whereNull('tooker_registration_mark');
+        })
+        ->get();
     }
 }

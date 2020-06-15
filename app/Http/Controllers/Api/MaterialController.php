@@ -3,86 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Material;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreMaterial;
+use App\Http\Requests\UpdateMaterial;
 
 class MaterialController extends Controller
 {
     public function index()
     {
-        $materials = Material::where([
-            ['amount', '>', 1],
-            ['returner_registration_mark', '=', null],
-            ['tooker_registration_mark', '=', null]
-        ])->get();
+        $materials = Material::borrowable()->get();
 
         return response()->json($materials);
     }
 
-    public function store(Request $request)
+    public function store(StoreMaterial $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'string|required',
-            'description' => 'string|required'
-        ]);
+        $info = $request->validated();
 
-        $material = Material::where([
-            ['name', '=', $validatedData['name']],
-            ['returner_registration_mark', '=', null]
-        ])->first();
+        $hasBorrowable = Material::hasBorrowableWithName($info['name']);
 
-        // I make that way because in the way that we structure the database,
-        // It's possible to have a Lost Material and a Material with the same
-        // name.
-        if (! is_null($material)) {
+        if ($hasBorrowable) {
             return response()->json([
                 'status' => 'fail',
-                'message' => sprintf('The %s already exists. Insert a valid material, please.', $material->name)
+                'message' => __('response.duplicated_material')
             ], 400);
         }
 
-        $material = Material::create($validatedData);
+        $material = Material::create($info);
         return response()->json($material, 201);
     }
 
-    public function show($id)
+    public function show(Material $material)
     {
-        $material = Material::find($id);
         return response()->json($material);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateMaterial $request, Material $material)
     {
-        $material = Material::find($id);
-
-        if(!$material) {
-            return response()->json([
-                 'error' => "Material doesn't exists"
-            ], 400);
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'string',
-            'description' => 'string',
-            'amount' => 'numeric'
-        ]);
-
-        $material->update($validatedData);
+        $material->update($request->validated());
 
         return response()->json($material);
-
     }
 
-    public function destroy($id)
+    public function destroy(Material $material)
     {
-        $material = Material::find($id);
-        if (!$material) {
-            return response()->json([
-                'error' => "Material doesn't exists"
-            ], 400);
-        }
-
         $material->delete();
     }
 }
