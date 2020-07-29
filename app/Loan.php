@@ -25,6 +25,8 @@ class Loan extends Model
      */
     public $timestamps = false;
 
+    protected $with = ['Material'];
+
     /**
      * Get the loan's user.
      */
